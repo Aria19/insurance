@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.maghrebia.data_extract.Business.ServicesImpl.BanqueServiceImpl;
 import com.maghrebia.data_extract.Business.ServicesImpl.ContactsServiceImpl;
 import com.maghrebia.data_extract.Business.ServicesImpl.ProductionServiceImpl;
-import com.maghrebia.data_extract.Business.ServicesImpl.RisqueServiceImpl;
 
 @RestController
 @RequestMapping("/api/import")
@@ -22,16 +21,13 @@ public class ImportController {
     private final ContactsServiceImpl contactsServiceImpl;
     private final ProductionServiceImpl productionServiceImpl;
     private final BanqueServiceImpl banqueServiceImpl;
-    private final RisqueServiceImpl risqueServiceImpl;
 
     public ImportController(ContactsServiceImpl contactsServiceImpl,
             ProductionServiceImpl productionServiceImpl,
-            BanqueServiceImpl banqueServiceImpl,
-            RisqueServiceImpl risqueServiceImpl) {
+            BanqueServiceImpl banqueServiceImpl) {
         this.contactsServiceImpl = contactsServiceImpl;
         this.productionServiceImpl = productionServiceImpl;
         this.banqueServiceImpl = banqueServiceImpl;
-        this.risqueServiceImpl = risqueServiceImpl;
     }
 
     @PostMapping(value = "/excel", consumes = "multipart/form-data")

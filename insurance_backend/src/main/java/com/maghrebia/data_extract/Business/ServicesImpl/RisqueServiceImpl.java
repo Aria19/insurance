@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.maghrebia.data_extract.Business.Services.RisqueService;
@@ -22,7 +20,6 @@ public class RisqueServiceImpl implements RisqueService {
 
     private final RisqueRepository risqueRepository;
     private final RisqueMapper risqueMapper;
-    private final Logger logger = LoggerFactory.getLogger(RisqueServiceImpl.class);
 
     public RisqueServiceImpl(RisqueRepository risqueRepository,
             RisqueMapper risqueMapper) {
