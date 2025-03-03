@@ -86,7 +86,7 @@ public class BanqueServiceImpl implements BanqueService {
 
             if (contact != null && productionOpt.isPresent() && risqueOpt.isPresent()) {
                 Production production = productionOpt.get();
-                Risque risque = risqueOpt.get();
+                //Risque risque = risqueOpt.get();
 
                 if (production.getContact().getIdContact().equals(contact.getIdContact())) {
                     Banque banque = new Banque();
@@ -108,7 +108,7 @@ public class BanqueServiceImpl implements BanqueService {
                     banque.setContact(contact);
 
                     // Link Risque to Banque
-                    banque.setRisque(risque);
+                    //banque.setRisque(risque);
 
                     banqueRepository.save(banque);
                 } else {
@@ -135,7 +135,7 @@ public class BanqueServiceImpl implements BanqueService {
                         banque.getTerme(),
                         banque.getModePayement(),
                         banque.getNt(),
-                        banque.getRisque().getCodeRisque(),
+                        banque.getContract().getRisque().getCodeRisque(),
                         banque.getBvBanque(),
                         banque.getBvPortail(),
                         banque.getNumeroFeuilleDeCaisse(),

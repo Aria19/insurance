@@ -9,12 +9,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ClientWithContractsDTO {
+public class CreateContactDto {
 
     private String assure;
     private String societe;
     private String telephone;
     private String email;
-    private List<ProductionDTO>  contracts;
-    
+    private String msh;
+    private String motDePasse;
+    private String cin;
+    private String carteSejour;
+
+    private List<CreateProductionDTO> contracts;
+    private List<CreateBanqueDTO> transactions;
 }

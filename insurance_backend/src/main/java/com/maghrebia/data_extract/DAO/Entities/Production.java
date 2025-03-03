@@ -3,18 +3,19 @@ package com.maghrebia.data_extract.DAO.Entities;
 import java.util.Date;
 import java.util.Set;
 
-//import org.hibernate.annotations.UuidGenerator;
+import com.maghrebia.data_extract.Utils.ContractNumberUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-//import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -29,19 +30,24 @@ import lombok.NoArgsConstructor;
 @Table(name = "production")
 public class Production {
 
-    // @GeneratedValue
-    // @UuidGenerator(style = UuidGenerator.Style.TIME)
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProduction;
-    
-    @Column(unique = true)
+
+    @Column(unique = true, nullable = false)
     private String numeroContrat;
+    
+    @PrePersist
+    @PreUpdate
+    public void validateAndGenerateNumeroContrat() {
+        if (this.numeroContrat == null || this.numeroContrat.trim().isEmpty()) {
+            this.numeroContrat = ContractNumberUtil.generateContractNumber(); // Generate if missing
+        } 
+    }
 
     private String nature;
-    //private String risque;
-    //private Integer codeRisque;
+    // private String risque;
+    // private Integer codeRisque;
 
     @Temporal(TemporalType.DATE)
     private Date dateEffet;

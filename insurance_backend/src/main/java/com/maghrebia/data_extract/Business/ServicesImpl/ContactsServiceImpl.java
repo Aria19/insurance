@@ -12,10 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.maghrebia.data_extract.Business.Services.ContactsService;
+import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
+import com.maghrebia.data_extract.DAO.Entities.Production;
+import com.maghrebia.data_extract.DAO.Entities.Risque;
+import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ContactsRepository;
-import com.maghrebia.data_extract.DTO.ClientWithContractsDTO;
+import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
+import com.maghrebia.data_extract.DTO.CreateContactDto;
 import com.maghrebia.data_extract.Mapper.ContactsMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
@@ -26,11 +31,20 @@ public class ContactsServiceImpl implements ContactsService {
     private final ContactsRepository contactsRepository;
     private final ContactsMapper contactsMapper;
     private final Logger logger = LoggerFactory.getLogger(ContactsServiceImpl.class);
+    private final ProductionRepository productionRepository;
+    private final BanqueRepository banqueRepository;
+    private final RisqueServiceImpl risqueServiceImpl;
 
     public ContactsServiceImpl(ContactsRepository contactsRepository,
-            ContactsMapper contactsMapper) {
+            ContactsMapper contactsMapper,
+            ProductionRepository productionRepository,
+            BanqueRepository banqueRepository,
+            RisqueServiceImpl risqueServiceImpl) {
         this.contactsRepository = contactsRepository;
         this.contactsMapper = contactsMapper;
+        this.productionRepository = productionRepository;
+        this.banqueRepository = banqueRepository;
+        this.risqueServiceImpl = risqueServiceImpl;
     }
 
     @Override
@@ -108,9 +122,63 @@ public class ContactsServiceImpl implements ContactsService {
     }
 
     @Override
-    public void addClientWithContracts(ClientWithContractsDTO clientAndContractsDTO) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addClientWithContracts'");
+    public Contacts saveContact(CreateContactDto contactDTO) {
+
+        Contacts contact = new Contacts();
+
+        contact.setAssure(contactDTO.getAssure());
+        contact.setSociete(contactDTO.getSociete());
+        contact.setTelephone(contactDTO.getTelephone());
+        contact.setEmail(contactDTO.getEmail());
+        contact.setMsh(contactDTO.getMsh());
+        contact.setMotDePasse(contactDTO.getMotDePasse());
+        contact.setCin(contactDTO.getCin());
+        contact.setCarteSejour(contactDTO.getCarteSejour());
+
+        // Save contact first to generate an ID
+        Contacts savedContact = contactsRepository.save(contact);
+
+        // Convert DTO Contracts to EntitiesProduction contract = new Production();
+        Production contract = new Production();
+        Optional<Risque> risqueOpt = risqueServiceImpl
+                .findBycodeRisque(contactDTO.getContracts().get(0).getCodeRisque());
+
+        if (risqueOpt.isPresent()) {
+            Risque risque = risqueOpt.get();
+
+            // contract.setNumeroContrat(UUID.randomUUID().toString()); // Auto-generated
+            // contract number
+            contract.setNature(contactDTO.getContracts().get(0).getNature());
+            contract.setRisque(risque);
+            contract.setDateEffet(contactDTO.getContracts().get(0).getDateEffet());
+            contract.setDateEcheance(contactDTO.getContracts().get(0).getDateEcheance());
+            contract.setDureeContrat(contactDTO.getContracts().get(0).getDureeContrat());
+            contract.setModePayement(contactDTO.getContracts().get(0).getModePayement());
+            contract.setNombreCheque(contactDTO.getContracts().get(0).getNombreCheque());
+            contract.setNumeroCheque(contactDTO.getContracts().get(0).getNumeroCheque());
+            contract.setPrimeNette(contactDTO.getContracts().get(0).getPrimeNette());
+            contract.setPrime(contactDTO.getContracts().get(0).getPrime());
+            contract.setCommission(contactDTO.getContracts().get(0).getCommission());
+            contract.setRemarques(contactDTO.getContracts().get(0).getRemarques());
+            contract.setContact(savedContact); // Link contract to saved contact
+
+            productionRepository.save(contract); // Save contract
+        }
+
+        // Convert DTO Banques to Entities (One transaction in this case)
+        Banque banque = new Banque();
+        banque.setDate(contactDTO.getTransactions().get(0).getDate());
+        banque.setMontant(contactDTO.getTransactions().get(0).getMontant());
+        banque.setTerme(contactDTO.getTransactions().get(0).getTerme());
+        banque.setNt(contactDTO.getTransactions().get(0).getNt());
+        banque.setContact(savedContact); // Link banque to saved contact
+
+        // Link the Banque to the contract via the contract number (produced above)
+        banque.setContract(contract); // Link to the contract created earlier
+
+        banqueRepository.save(banque); // Save transaction (banque)
+
+        return savedContact;
     }
 
 }

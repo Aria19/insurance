@@ -48,8 +48,4 @@ public class Banque {
     @JoinColumn(name = "id_production", referencedColumnName = "idProduction", nullable = false)
     private Production contract;
 
-    @ManyToOne
-    @JoinColumn(name = "id_risque", referencedColumnName = "idRisque", nullable = false)
-    private Risque risque;
-
 }

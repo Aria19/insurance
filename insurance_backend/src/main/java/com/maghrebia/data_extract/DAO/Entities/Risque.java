@@ -30,7 +30,4 @@ public class Risque {
 
     @OneToMany(mappedBy = "risque", cascade = CascadeType.ALL, orphanRemoval =true)
     private Set<Production> contracts;
-
-    @OneToMany(mappedBy = "risque", cascade = CascadeType.ALL, orphanRemoval =true)
-    private Set<Banque> transactions;
 }

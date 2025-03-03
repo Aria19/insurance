@@ -2,6 +2,7 @@ package com.maghrebia.data_extract.Web.RestControllers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maghrebia.data_extract.Business.ServicesImpl.ContactsServiceImpl;
+import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
+import com.maghrebia.data_extract.DTO.CreateContactDto;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/contacts")
@@ -42,4 +49,11 @@ public class ContactsController {
         
         return ResponseEntity.ok(contacts);  // Return the list of contacts
     }
+
+    @PostMapping("/add")
+    public ResponseEntity<Contacts> addContact(@RequestBody CreateContactDto createContactDto) {
+        Contacts savedContact = contactsServiceImpl.saveContact(createContactDto);
+        return new ResponseEntity<>(savedContact, HttpStatus.CREATED);
+    }
+    
 }

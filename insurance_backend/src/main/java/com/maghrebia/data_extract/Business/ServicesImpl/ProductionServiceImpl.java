@@ -77,6 +77,13 @@ public class ProductionServiceImpl implements ProductionService {
                 continue;
             }
 
+            /*
+             * if (numeroContrat == null || numeroContrat.trim().isEmpty()) {
+             * numeroContrat = UUID.randomUUID().toString().replaceAll("[^A-Za-z1-9]",
+             * "").substring(0, 10);
+             * }
+             */
+
             if (productionRepository.existsByNumeroContrat(numeroContrat)) {
                 continue;
             }
@@ -85,15 +92,7 @@ public class ProductionServiceImpl implements ProductionService {
             Optional<Contacts> societeOpt = contactsServiceImpl.findBySociete(assure);
             Optional<Risque> risqueOpt = risqueServiceImpl.findBycodeRisque(codeRisque);
 
-            Contacts contact;
-
-            if(contactOpt.isPresent()){
-                contact = contactOpt.get();
-            } else if(societeOpt.isPresent()){
-                contact = societeOpt.get();
-            } else {
-                contact = null;
-            }
+            Contacts contact = contactOpt.orElse(societeOpt.orElse(null));
 
             if (contact != null && risqueOpt.isPresent()) {
 
@@ -119,7 +118,7 @@ public class ProductionServiceImpl implements ProductionService {
                 // Link Contact to Production
                 production.setContact(contact);
 
-                //Link Risque to Production
+                // Link Risque to Production
                 production.setRisque(risque);
 
                 // Save the production entity

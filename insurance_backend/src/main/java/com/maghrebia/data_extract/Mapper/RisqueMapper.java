@@ -14,7 +14,6 @@ public interface RisqueMapper {
 
     @Mapping(target = "idRisque", ignore =true)
     @Mapping(target = "contracts", ignore =true)
-    @Mapping(target = "transactions", ignore =true)
     Risque toEntity(RisqueDTO risqueDTO);
 
     RisqueDTO toDTO(Risque risque);
