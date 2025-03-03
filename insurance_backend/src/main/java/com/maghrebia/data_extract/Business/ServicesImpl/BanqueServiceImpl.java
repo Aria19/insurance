@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.maghrebia.data_extract.Business.Services.BanqueService;
 import com.maghrebia.data_extract.DAO.Entities.Banque;
@@ -20,6 +21,8 @@ import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DTO.BanqueDTO;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class BanqueServiceImpl implements BanqueService {
@@ -44,81 +47,86 @@ public class BanqueServiceImpl implements BanqueService {
     public void importBanques(Sheet sheet) {
         Iterator<Row> rowIterator = sheet.iterator();
 
-        if (rowIterator.hasNext()) {
-            rowIterator.next();
-        }
+        if (rowIterator.hasNext())
+            rowIterator.next(); // Skip header
 
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
+            BanqueData data = parseRow(row);
 
-            String numeroContrat = ExcelCellUtil.getCellValue(row, 0, String.class);
-            String assure = ExcelCellUtil.getCellValue(row, 1, String.class);
-            Date date = ExcelCellUtil.getCellValue(row, 2, Date.class);
-            Float montant = ExcelCellUtil.getCellValue(row, 3, Float.class);
-            String terme = ExcelCellUtil.getCellValue(row, 4, String.class);
-            String modePayement = ExcelCellUtil.getCellValue(row, 5, String.class);
-            String nt = ExcelCellUtil.getCellValue(row, 6, String.class);
-            Integer codeRisque = ExcelCellUtil.getCellValue(row, 7, Integer.class);
-            String bvBanque = ExcelCellUtil.getCellValue(row, 8, String.class);
-            String bvPortail = ExcelCellUtil.getCellValue(row, 9, String.class);
-            String numeroFeuilleDeCaisse = ExcelCellUtil.getCellValue(row, 10, String.class);
-            String remarque = ExcelCellUtil.getCellValue(row, 11, String.class);
+            if (data.isEmpty())
+                continue;
 
-            if (ExcelRowUtil.isRowEmpty(numeroContrat, assure, date, montant, terme, modePayement,
-                    nt, codeRisque, bvBanque, bvPortail, numeroFeuilleDeCaisse, remarque)) {
+            Optional<Contacts> contactOpt = contactsServiceImpl.findByAssure(data.assure());
+            Optional<Contacts> societeOpt = contactsServiceImpl.findBySociete(data.assure());
+            Optional<Production> productionOpt = productionServiceImpl.findByNumeroContrat(data.numeroContrat());
+            Optional<Risque> risqueOpt = risqueServiceImpl.findBycodeRisque(data.codeRisque());
+
+            Contacts contact = findOrCreateContact(contactOpt, societeOpt);
+            if (contact == null || productionOpt.isEmpty() || risqueOpt.isEmpty()) {
+                logger.info("Skipping row: Contract or client not found for " + data.numeroContrat() + " and "
+                        + data.assure());
                 continue;
             }
 
-            Optional<Contacts> contactOpt = contactsServiceImpl.findByAssure(assure);
-            Optional<Contacts> societeOpt = contactsServiceImpl.findBySociete(assure);
-            Optional<Production> productionOpt = productionServiceImpl.findByNumeroContrat(numeroContrat);
-            Optional<Risque> risqueOpt = risqueServiceImpl.findBycodeRisque(codeRisque);
-
-            Contacts contact;
-
-            if (contactOpt.isPresent()) {
-                contact = contactOpt.get();
-            } else if (societeOpt.isPresent()) {
-                contact = societeOpt.get();
-            } else {
-                contact = null;
+            Production production = productionOpt.get();
+            if (!production.getContact().getIdContact().equals(contact.getIdContact())) {
+                logger.info("Skipping row: Client does not match the contract number for " + data.assure() + " and "
+                        + data.numeroContrat());
+                continue;
             }
 
-            if (contact != null && productionOpt.isPresent() && risqueOpt.isPresent()) {
-                Production production = productionOpt.get();
-                //Risque risque = risqueOpt.get();
+            createBanqueEntry(data, contact, production);
+        }
+    }
 
-                if (production.getContact().getIdContact().equals(contact.getIdContact())) {
-                    Banque banque = new Banque();
+    /** Extracts data from a row */
+    private BanqueData parseRow(Row row) {
+        return new BanqueData(
+                ExcelCellUtil.getCellValue(row, 0, String.class), 
+                ExcelCellUtil.getCellValue(row, 1, String.class), 
+                ExcelCellUtil.getCellValue(row, 2, Date.class), 
+                ExcelCellUtil.getCellValue(row, 3, Float.class), 
+                ExcelCellUtil.getCellValue(row, 4, String.class), 
+                ExcelCellUtil.getCellValue(row, 5, String.class), 
+                ExcelCellUtil.getCellValue(row, 6, String.class), 
+                ExcelCellUtil.getCellValue(row, 7, Integer.class),
+                ExcelCellUtil.getCellValue(row, 8, String.class), 
+                ExcelCellUtil.getCellValue(row, 9, String.class), 
+                ExcelCellUtil.getCellValue(row, 10, String.class), 
+                ExcelCellUtil.getCellValue(row, 11, String.class) 
+        );
+    }
 
-                    banque.setDate(date);
-                    banque.setMontant(montant);
-                    banque.setTerme(terme);
-                    banque.setModePayement(modePayement);
-                    banque.setNt(nt);
-                    banque.setBvBanque(bvBanque);
-                    banque.setBvPortail(bvPortail);
-                    banque.setNumeroFeuilleDeCaisse(numeroFeuilleDeCaisse);
-                    banque.setRemarque(remarque);
+    // Finds or assigns a contact 
+    private Contacts findOrCreateContact(Optional<Contacts> contactOpt, Optional<Contacts> societeOpt) {
+        return contactOpt.orElse(societeOpt.orElse(null));
+    }
 
-                    // Link Production to Banque
-                    banque.setContract(production);
+    private void createBanqueEntry(BanqueData data, Contacts contact, Production production) {
+        Banque banque = new Banque();
+        banque.setDate(data.date());
+        banque.setMontant(data.montant());
+        banque.setTerme(data.terme());
+        banque.setModePayement(data.modePayement());
+        banque.setNt(data.nt());
+        banque.setBvBanque(data.bvBanque());
+        banque.setBvPortail(data.bvPortail());
+        banque.setNumeroFeuilleDeCaisse(data.numeroFeuilleDeCaisse());
+        banque.setRemarque(data.remarque());
+        banque.setContract(production);
+        banque.setContact(contact);
 
-                    // Link Contact to Banque
-                    banque.setContact(contact);
+        banqueRepository.save(banque);
+    }
 
-                    // Link Risque to Banque
-                    //banque.setRisque(risque);
-
-                    banqueRepository.save(banque);
-                } else {
-                    logger.info("Skipping row: Client does not match the contract number for " +
-                            assure + " and " + numeroContrat);
-                }
-            } else {
-                logger.info("Skipping row: Contract or client not found for " + numeroContrat
-                        + " and " + assure);
-            }
+    private record BanqueData(
+            String numeroContrat, String assure, Date date, Float montant, String terme,
+            String modePayement, String nt, Integer codeRisque, String bvBanque,
+            String bvPortail, String numeroFeuilleDeCaisse, String remarque) {
+        boolean isEmpty() {
+            return ExcelRowUtil.isRowEmpty(numeroContrat, assure, date, montant, terme, modePayement,
+                    nt, codeRisque, bvBanque, bvPortail, numeroFeuilleDeCaisse, remarque);
         }
     }
 
@@ -141,6 +149,19 @@ public class BanqueServiceImpl implements BanqueService {
                         banque.getNumeroFeuilleDeCaisse(),
                         banque.getRemarque()))
                 .toList();
+    }
+
+    @Transactional
+    public void deleteBanqueEntry(Long idTransaction){
+        Optional<Banque> banqueOpt = banqueRepository.findById(idTransaction);
+
+        if(banqueOpt.isEmpty()){
+            throw new EntityNotFoundException("Banque transaction with ID " + idTransaction + " not found.");
+        }
+
+        Banque banque = banqueOpt.get();
+        
+        banqueRepository.delete(banque);
     }
 
 }

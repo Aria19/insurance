@@ -14,4 +14,5 @@ public interface ProductionService {
     Optional<Production> findByNumeroContrat(String numeroContrat);
     public List<ProductionDTO> getAllProductions();
     public List<ProductionDTO> searchContracts(String keyword, String risk, Integer code);
+    public String deleteProduction(Long idProduction);
 }

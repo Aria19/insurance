@@ -22,6 +22,7 @@ import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
 import com.maghrebia.data_extract.DTO.CreateContactDto;
 import com.maghrebia.data_extract.Mapper.ContactsMapper;
+import com.maghrebia.data_extract.Utils.ContractNumberUtil;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
 
@@ -146,8 +147,7 @@ public class ContactsServiceImpl implements ContactsService {
         if (risqueOpt.isPresent()) {
             Risque risque = risqueOpt.get();
 
-            // contract.setNumeroContrat(UUID.randomUUID().toString()); // Auto-generated
-            // contract number
+            contract.setNumeroContrat(generateUniqueContractNumber());
             contract.setNature(contactDTO.getContracts().get(0).getNature());
             contract.setRisque(risque);
             contract.setDateEffet(contactDTO.getContracts().get(0).getDateEffet());
@@ -163,6 +163,8 @@ public class ContactsServiceImpl implements ContactsService {
             contract.setContact(savedContact); // Link contract to saved contact
 
             productionRepository.save(contract); // Save contract
+        } else {
+            throw new RuntimeException("Risque not found");
         }
 
         // Convert DTO Banques to Entities (One transaction in this case)
@@ -179,6 +181,14 @@ public class ContactsServiceImpl implements ContactsService {
         banqueRepository.save(banque); // Save transaction (banque)
 
         return savedContact;
+    }
+
+    public String generateUniqueContractNumber() {
+        String contractNumber;
+        do {
+            contractNumber = ContractNumberUtil.generateContractNumber(); // Generates contract number
+        } while (productionRepository.existsByNumeroContrat(contractNumber)); // Ensures uniqueness
+        return contractNumber;
     }
 
 }

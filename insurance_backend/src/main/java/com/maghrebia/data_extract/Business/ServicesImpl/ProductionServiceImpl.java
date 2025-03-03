@@ -5,37 +5,47 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.maghrebia.data_extract.Business.Services.ProductionService;
+import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
+import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
 import com.maghrebia.data_extract.Mapper.ProductionMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
+import com.maghrebia.data_extract.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProductionServiceImpl implements ProductionService {
 
     final ProductionRepository productionRepository;
+    final BanqueRepository banqueRepository;
     final ProductionMapper productionMapper;
     final ContactsServiceImpl contactsServiceImpl;
     final RisqueServiceImpl risqueServiceImpl;
     private final Logger logger = LoggerFactory.getLogger(ProductionServiceImpl.class);
 
     public ProductionServiceImpl(ProductionRepository productionRepository,
+            BanqueRepository banqueRepository,
             ProductionMapper productionMapper,
             ContactsServiceImpl contactsServiceImpl,
             RisqueServiceImpl risqueServiceImpl) {
         this.productionRepository = productionRepository;
+        this.banqueRepository = banqueRepository;
         this.productionMapper = productionMapper;
         this.contactsServiceImpl = contactsServiceImpl;
         this.risqueServiceImpl = risqueServiceImpl;
@@ -190,5 +200,38 @@ public class ProductionServiceImpl implements ProductionService {
 
         return contracts;
     }
+
+    @Override
+    @Transactional
+    public String deleteProduction(Long idProduction) {
+        logger.info("Production repository: " + productionRepository);
+        try {
+            if (!productionRepository.existsById(idProduction)) {
+                throw new RuntimeException("Contract with id " + idProduction +
+                        " not found");
+            }
+            banqueRepository.deleteByContractId(idProduction);
+            productionRepository.deleteById(idProduction);
+            return "Contract deleted successfully";
+        } catch (Exception e) {
+            logger.error("Error while deleting contract with id " + idProduction, e);
+            throw new RuntimeException("Error while deleting contract with id " +
+                    idProduction + ": " + e.getMessage(), e);
+        }
+    }
+
+    /* @Transactional
+    public void deleteProduction(Long idProduction) {
+        Production production = productionRepository.findById(idProduction)
+                .orElseThrow(() -> new ResourceNotFoundException("Production not found"));
+
+        // Manually handle orphan removal if needed
+        for (Banque banque : production.getTransactions()) {
+            banque.setContract(null); // Remove the reference to Production
+            banqueRepository.save(banque);
+        }
+
+        productionRepository.delete(production); // Delete the Production entity
+    } */
 
 }
