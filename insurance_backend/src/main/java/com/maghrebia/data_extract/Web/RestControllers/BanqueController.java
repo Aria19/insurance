@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maghrebia.data_extract.Business.ServicesImpl.BanqueServiceImpl;
+import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DTO.BanqueDTO;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/Banques")
@@ -26,6 +30,12 @@ public class BanqueController {
     @GetMapping("/view")
     public ResponseEntity<List<BanqueDTO>> getAllBanques(){
         return ResponseEntity.ok(banqueServiceImpl.getAllBanques());
+    }
+
+    @PutMapping("update/{idBanque}")
+    public ResponseEntity<BanqueDTO> updateBanque(@PathVariable Long idBanque, @RequestBody BanqueDTO banqueDTO) {
+        BanqueDTO updatedBanque = banqueServiceImpl.updateBanque(idBanque, banqueDTO);
+        return ResponseEntity.ok(updatedBanque);
     }
 
     @DeleteMapping("/delete/{idTransaction}")

@@ -19,6 +19,8 @@ public class CreateContactDto {
     private String motDePasse;
     private String cin;
     private String carteSejour;
+    private String passeport;
+    private String matriculeFiscale;
 
     private List<CreateProductionDTO> contracts;
     private List<CreateBanqueDTO> transactions;

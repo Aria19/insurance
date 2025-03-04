@@ -32,6 +32,8 @@ public class Contacts {
     private String motDePasse;
     private String cin;
     private String carteSejour;
+    private String passeport;
+    private String matriculeFiscale;
 
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Production> contracts;

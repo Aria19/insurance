@@ -17,4 +17,6 @@ public class ContactsDTO {
     private String motDePasse;
     private String cin;
     private String carteSejour;
+    private String passeport;
+    private String matriculeFiscale;
 }

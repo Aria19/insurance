@@ -3,8 +3,6 @@ package com.maghrebia.data_extract.DAO.Entities;
 import java.util.Date;
 import java.util.Set;
 
-import com.maghrebia.data_extract.Utils.ContractNumberUtil;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,13 +45,14 @@ public class Production {
 
     private Integer mois;
 
-    @Temporal(TemporalType.DATE)
-    private Date dateDuCheque;
-
     private String dureeContrat;
     private String modePayement;
     private Integer nombreCheque;
     private String numeroCheque;
+
+    @Temporal(TemporalType.DATE)
+    private Date dateDuCheque;
+    
     private float primeNette;
     private float prime;
     private float commission;

@@ -213,6 +213,7 @@ public class ProductionServiceImpl implements ProductionService {
             banqueRepository.deleteByContractId(idProduction);
             productionRepository.deleteById(idProduction);
             return "Contract deleted successfully";
+
         } catch (Exception e) {
             logger.error("Error while deleting contract with id " + idProduction, e);
             throw new RuntimeException("Error while deleting contract with id " +
@@ -220,18 +221,26 @@ public class ProductionServiceImpl implements ProductionService {
         }
     }
 
-    /* @Transactional
-    public void deleteProduction(Long idProduction) {
-        Production production = productionRepository.findById(idProduction)
-                .orElseThrow(() -> new ResourceNotFoundException("Production not found"));
+    @Override
+    public void updateProduction(Long idProduction, ProductionDTO productionDTO) {
+        productionRepository.findById(idProduction)
+                .ifPresent(currentContract -> {
+                    currentContract.setNature(productionDTO.getNature());
+                    currentContract.setDateEffet(productionDTO.getDateEffet());
+                    currentContract.setDateEcheance(productionDTO.getDateEcheance());
+                    currentContract.setMois(productionDTO.getMois());
+                    currentContract.setDureeContrat(productionDTO.getDureeContrat());
+                    currentContract.setModePayement(productionDTO.getModePayement());
+                    currentContract.setNombreCheque(productionDTO.getNombreCheque());
+                    currentContract.setNumeroCheque(productionDTO.getNumeroCheque());
+                    currentContract.setDateDuCheque(productionDTO.getDateDuCheque());
+                    currentContract.setPrimeNette(productionDTO.getPrimeNette());
+                    currentContract.setPrime(productionDTO.getPrime());
+                    currentContract.setCommission(productionDTO.getCommission());
+                    currentContract.setRemarques(productionDTO.getRemarques());
 
-        // Manually handle orphan removal if needed
-        for (Banque banque : production.getTransactions()) {
-            banque.setContract(null); // Remove the reference to Production
-            banqueRepository.save(banque);
-        }
-
-        productionRepository.delete(production); // Delete the Production entity
-    } */
+                    productionRepository.save(currentContract);
+                });
+    }
 
 }

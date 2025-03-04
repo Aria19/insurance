@@ -83,22 +83,21 @@ public class BanqueServiceImpl implements BanqueService {
     /** Extracts data from a row */
     private BanqueData parseRow(Row row) {
         return new BanqueData(
-                ExcelCellUtil.getCellValue(row, 0, String.class), 
-                ExcelCellUtil.getCellValue(row, 1, String.class), 
-                ExcelCellUtil.getCellValue(row, 2, Date.class), 
-                ExcelCellUtil.getCellValue(row, 3, Float.class), 
-                ExcelCellUtil.getCellValue(row, 4, String.class), 
-                ExcelCellUtil.getCellValue(row, 5, String.class), 
-                ExcelCellUtil.getCellValue(row, 6, String.class), 
+                ExcelCellUtil.getCellValue(row, 0, String.class),
+                ExcelCellUtil.getCellValue(row, 1, String.class),
+                ExcelCellUtil.getCellValue(row, 2, Date.class),
+                ExcelCellUtil.getCellValue(row, 3, Float.class),
+                ExcelCellUtil.getCellValue(row, 4, String.class),
+                ExcelCellUtil.getCellValue(row, 5, String.class),
+                ExcelCellUtil.getCellValue(row, 6, String.class),
                 ExcelCellUtil.getCellValue(row, 7, Integer.class),
-                ExcelCellUtil.getCellValue(row, 8, String.class), 
-                ExcelCellUtil.getCellValue(row, 9, String.class), 
-                ExcelCellUtil.getCellValue(row, 10, String.class), 
-                ExcelCellUtil.getCellValue(row, 11, String.class) 
-        );
+                ExcelCellUtil.getCellValue(row, 8, String.class),
+                ExcelCellUtil.getCellValue(row, 9, String.class),
+                ExcelCellUtil.getCellValue(row, 10, String.class),
+                ExcelCellUtil.getCellValue(row, 11, String.class));
     }
 
-    // Finds or assigns a contact 
+    // Finds or assigns a contact
     private Contacts findOrCreateContact(Optional<Contacts> contactOpt, Optional<Contacts> societeOpt) {
         return contactOpt.orElse(societeOpt.orElse(null));
     }
@@ -152,16 +151,47 @@ public class BanqueServiceImpl implements BanqueService {
     }
 
     @Transactional
-    public void deleteBanqueEntry(Long idTransaction){
+    public void deleteBanqueEntry(Long idTransaction) {
         Optional<Banque> banqueOpt = banqueRepository.findById(idTransaction);
 
-        if(banqueOpt.isEmpty()){
+        if (banqueOpt.isEmpty()) {
             throw new EntityNotFoundException("Banque transaction with ID " + idTransaction + " not found.");
         }
 
         Banque banque = banqueOpt.get();
-        
+
         banqueRepository.delete(banque);
+    }
+
+    public BanqueDTO updateBanque(Long idBanque, BanqueDTO banqueDTO) {
+        return banqueRepository.findById(idBanque)
+                .map(existingBanque -> {
+                    existingBanque.setDate(banqueDTO.getDate());
+                    existingBanque.setMontant(banqueDTO.getMontant());
+                    existingBanque.setTerme(banqueDTO.getTerme());
+                    existingBanque.setModePayement(banqueDTO.getModePayement());
+                    existingBanque.setNt(banqueDTO.getNt());
+                    existingBanque.setBvBanque(banqueDTO.getBvBanque());
+                    existingBanque.setBvPortail(banqueDTO.getBvPortail());
+                    existingBanque.setNumeroFeuilleDeCaisse(banqueDTO.getNumeroFeuilleDeCaisse());
+                    existingBanque.setRemarque(banqueDTO.getRemarque());
+
+                    Banque updatedBanque = banqueRepository.save(existingBanque);
+                    return new BanqueDTO(
+                            updatedBanque.getContract().getNumeroContrat(),
+                            updatedBanque.getContact().getAssure(),
+                            updatedBanque.getDate(),
+                            updatedBanque.getMontant(),
+                            updatedBanque.getTerme(),
+                            updatedBanque.getModePayement(),
+                            updatedBanque.getNt(),
+                            updatedBanque.getContract().getRisque().getCodeRisque(),
+                            updatedBanque.getBvBanque(),
+                            updatedBanque.getBvPortail(),
+                            updatedBanque.getNumeroFeuilleDeCaisse(),
+                            updatedBanque.getRemarque());
+                })
+                .orElseThrow(() -> new RuntimeException("Banque with id " + idBanque + " not found"));
     }
 
 }

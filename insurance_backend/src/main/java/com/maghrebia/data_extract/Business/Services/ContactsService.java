@@ -17,5 +17,7 @@ public interface ContactsService {
     public List<ContactsDTO> getAllContacts();
     public List<ContactsDTO> searchContacts(String name, String msh, String societe, Integer codeRisque, String numeroContrat);
     public Contacts saveContact(CreateContactDto contactsDTO);
+    public void updateContact(Long idContact, ContactsDTO contactDTO);
+    public String deleteContact(Long idContact);
     
 }

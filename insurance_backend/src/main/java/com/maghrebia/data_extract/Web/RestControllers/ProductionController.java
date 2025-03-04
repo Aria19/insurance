@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maghrebia.data_extract.Business.ServicesImpl.ProductionServiceImpl;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/productions")
@@ -42,6 +45,12 @@ public class ProductionController {
         }
         
         return ResponseEntity.ok(contracts);  // Return the list of contracts
+    }
+
+    @PutMapping("update/{idProduction}")
+    public ResponseEntity<String> updateProduction(@PathVariable Long idProduction, @RequestBody ProductionDTO productionDTO) {
+        productionServiceImpl.updateProduction(idProduction, productionDTO);
+        return ResponseEntity.ok("Banque updated successfully");
     }
 
     @DeleteMapping("/delete/{idProduction}")

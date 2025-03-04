@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.maghrebia.data_extract.Business.Services.ContactsService;
 import com.maghrebia.data_extract.DAO.Entities.Banque;
@@ -67,8 +68,11 @@ public class ContactsServiceImpl implements ContactsService {
             String motDePasse = ExcelCellUtil.getCellValue(row, 5, String.class);
             String cin = ExcelCellUtil.getCellValue(row, 6, String.class);
             String carteSejour = ExcelCellUtil.getCellValue(row, 7, String.class);
+            String passeport = ExcelCellUtil.getCellValue(row, 8, String.class);
+            String matriculeFiscale = ExcelCellUtil.getCellValue(row, 9, String.class);
 
-            if (ExcelRowUtil.isRowEmpty(assure, telephone, email, msh, motDePasse, cin, carteSejour)) {
+            if (ExcelRowUtil.isRowEmpty(assure, telephone, email, msh, motDePasse, cin, carteSejour,
+                    passeport, matriculeFiscale)) {
                 continue;
             }
 
@@ -76,8 +80,8 @@ public class ContactsServiceImpl implements ContactsService {
                 logger.info("Skipping duplicate entry: " + assure);
             } else {
 
-                ContactsDTO contactsDTO = new ContactsDTO(assure, societe, telephone, email, msh, motDePasse, cin,
-                        carteSejour);
+                ContactsDTO contactsDTO = new ContactsDTO(assure, societe, telephone, email, msh,
+                        motDePasse, cin, carteSejour, passeport, matriculeFiscale);
 
                 Contacts contact = contactsMapper.toEntity(contactsDTO);
 
@@ -116,7 +120,9 @@ public class ContactsServiceImpl implements ContactsService {
                         contact.getMsh(),
                         contact.getMotDePasse(),
                         contact.getCin(),
-                        contact.getCarteSejour()))
+                        contact.getCarteSejour(),
+                        contact.getPasseport(),
+                        contact.getMatriculeFiscale()))
                 .toList();
         contacts.addAll(contactDtos);
         return contacts;
@@ -135,6 +141,8 @@ public class ContactsServiceImpl implements ContactsService {
         contact.setMotDePasse(contactDTO.getMotDePasse());
         contact.setCin(contactDTO.getCin());
         contact.setCarteSejour(contactDTO.getCarteSejour());
+        contact.setPasseport(contactDTO.getPasseport());
+        contact.setMatriculeFiscale(contactDTO.getMatriculeFiscale());
 
         // Save contact first to generate an ID
         Contacts savedContact = contactsRepository.save(contact);
@@ -189,6 +197,45 @@ public class ContactsServiceImpl implements ContactsService {
             contractNumber = ContractNumberUtil.generateContractNumber(); // Generates contract number
         } while (productionRepository.existsByNumeroContrat(contractNumber)); // Ensures uniqueness
         return contractNumber;
+    }
+
+    @Override
+    @Transactional
+    public String deleteContact(Long idContact) {
+        try {
+            if (!contactsRepository.existsById(idContact)) {
+                throw new RuntimeException("Contact with id " + idContact +
+                        " not found");
+            }
+            banqueRepository.deleteByContactId(idContact);
+            productionRepository.deleteByContactId(idContact);
+            contactsRepository.deleteById(idContact);
+            return "Contact deleted successfully";
+
+        } catch (Exception e) {
+            logger.error("Error while deleting contact with id " + idContact, e);
+            throw new RuntimeException("Error while deleting contact with id " +
+                    idContact + ": " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateContact(Long idContact, ContactsDTO contactDTO) {
+        contactsRepository.findById(idContact)
+                .ifPresent(currentContact -> {
+                    currentContact.setAssure(contactDTO.getAssure());
+                    currentContact.setSociete(contactDTO.getSociete());
+                    currentContact.setTelephone(contactDTO.getTelephone());
+                    currentContact.setEmail(contactDTO.getEmail());
+                    currentContact.setMsh(contactDTO.getMsh());
+                    currentContact.setMotDePasse(contactDTO.getMotDePasse());
+                    currentContact.setCin(contactDTO.getCin());
+                    currentContact.setCarteSejour(contactDTO.getCarteSejour());
+                    currentContact.setPasseport(contactDTO.getPasseport());
+                    currentContact.setMatriculeFiscale(contactDTO.getMatriculeFiscale());
+
+                    contactsRepository.save(currentContact);
+                });
     }
 
 }

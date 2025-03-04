@@ -10,5 +10,6 @@ public interface BanqueService {
 
     public void importBanques(Sheet sheet);
     public List<BanqueDTO> getAllBanques();
+    public BanqueDTO updateBanque(Long idBanque, BanqueDTO banqueDTO);
     public void deleteBanqueEntry(Long idTransaction);
 }
