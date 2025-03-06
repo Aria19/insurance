@@ -16,7 +16,6 @@ import com.maghrebia.data_extract.DTO.ProductionDTO;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/productions")
 public class ProductionController {
@@ -28,7 +27,7 @@ public class ProductionController {
     }
 
     @GetMapping("/view")
-    public ResponseEntity<List<ProductionDTO>> getAllProductions(){
+    public ResponseEntity<List<ProductionDTO>> getAllProductions() {
         return ResponseEntity.ok(productionServiceImpl.getAllProductions());
     }
 
@@ -36,25 +35,28 @@ public class ProductionController {
     public ResponseEntity<List<ProductionDTO>> searchContracts(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "risque", required = false) String risque,
-            @RequestParam(value = "codeRisque", required = false) Integer codeRisque) {
-        
-        List<ProductionDTO> contracts = productionServiceImpl.searchContracts(keyword, risque, codeRisque);
-        
+            @RequestParam(value = "codeRisque", required = false) Integer codeRisque,
+            @RequestParam(value = "dateEffet", required = false) Integer dateEffet) {
+
+        List<ProductionDTO> contracts = productionServiceImpl.searchContracts(keyword, risque, 
+        codeRisque, dateEffet);
+
         if (contracts.isEmpty()) {
-            return ResponseEntity.noContent().build();  // No contracts found
+            return ResponseEntity.noContent().build(); // No contracts found
         }
-        
-        return ResponseEntity.ok(contracts);  // Return the list of contracts
+
+        return ResponseEntity.ok(contracts); // Return the list of contracts
     }
 
     @PutMapping("update/{idProduction}")
-    public ResponseEntity<String> updateProduction(@PathVariable Long idProduction, @RequestBody ProductionDTO productionDTO) {
+    public ResponseEntity<String> updateProduction(@PathVariable Long idProduction,
+            @RequestBody ProductionDTO productionDTO) {
         productionServiceImpl.updateProduction(idProduction, productionDTO);
         return ResponseEntity.ok("Banque updated successfully");
     }
 
     @DeleteMapping("/delete/{idProduction}")
-    public ResponseEntity<String> deleteProduction(@PathVariable Long idProduction){
+    public ResponseEntity<String> deleteProduction(@PathVariable Long idProduction) {
         try {
             productionServiceImpl.deleteProduction(idProduction);
             return ResponseEntity.ok("Production with Id " + idProduction + "has been deleted");
@@ -64,8 +66,12 @@ public class ProductionController {
     }
 
     @GetMapping("/export")
-    public ResponseEntity<?> exportProuctionToExcel() {
-        return productionServiceImpl.exportProuctionToExcel();
+    public ResponseEntity<?> exportProuctionToExcel(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String risk,
+            @RequestParam(required = false) Integer code,
+            @RequestParam(required = false) Integer dateEffet) {
+        return productionServiceImpl.exportProuctionToExcel(keyword, risk, code, dateEffet);
     }
-    
+
 }

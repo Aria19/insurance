@@ -15,20 +15,22 @@ import com.maghrebia.data_extract.DAO.Entities.Production;
 @Repository
 public interface ProductionRepository extends JpaRepository<Production, Long> {
 
-    boolean existsByNumeroContrat(String numeroContrat);
-    boolean existsById(Long idProduction);
+        boolean existsByNumeroContrat(String numeroContrat);
 
-    Optional<Production> findByNumeroContrat(String numeroContrat);
+        boolean existsById(Long idProduction);
 
-    @Query("SELECT p FROM Production p WHERE " +
-            "(:keyword IS NULL OR LOWER(p.contact.assure) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.contact.msh) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-            "AND (:risque IS NULL OR LOWER(p.risque.risqueName) LIKE LOWER(CONCAT('%', :risque, '%'))) " +
-            "AND (:codeRisque IS NULL OR p.risque.codeRisque = :codeRisque)")
-    List<Production> searchContracts(@Param("keyword") String keyword,
-            @Param("risque") String risque,
-            @Param("codeRisque") Integer codeRisque);
+        Optional<Production> findByNumeroContrat(String numeroContrat);
 
+        @Query("SELECT p FROM Production p WHERE " +
+                        "(:keyword IS NULL OR LOWER(p.contact.assure) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                        "LOWER(p.contact.msh) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+                        "AND (:risque IS NULL OR LOWER(p.risque.risqueName) LIKE LOWER(CONCAT('%', :risque, '%'))) " +
+                        "AND (:codeRisque IS NULL OR p.risque.codeRisque = :codeRisque)" +
+                        "AND (:dateEffet IS NULL OR FUNCTION('YEAR', p.dateEffet) = :dateEffet)")
+        List<Production> searchContracts(@Param("keyword") String keyword,
+                        @Param("risque") String risque,
+                        @Param("codeRisque") Integer codeRisque,
+                        @Param("dateEffet") Integer dateEffet);
 
         @Transactional
         @Modifying

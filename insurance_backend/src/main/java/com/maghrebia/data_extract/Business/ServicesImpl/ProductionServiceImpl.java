@@ -2,7 +2,6 @@ package com.maghrebia.data_extract.Business.ServicesImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -176,12 +175,12 @@ public class ProductionServiceImpl implements ProductionService {
     }
 
     @Override
-    public List<ProductionDTO> searchContracts(String keyword, String risk, Integer code) {
+    public List<ProductionDTO> searchContracts(String keyword, String risk, Integer code, Integer dateEffet) {
         List<ProductionDTO> contracts = new ArrayList<>();
 
         // Fetch CarInsurance entities, map to CarInsuranceDTO
         List<ProductionDTO> productionDTOs = productionRepository
-                .searchContracts(keyword, risk, code)
+                .searchContracts(keyword, risk, code, dateEffet)
                 .stream()
                 .map(production -> new ProductionDTO(
                         production.getNumeroContrat(),
@@ -251,8 +250,10 @@ public class ProductionServiceImpl implements ProductionService {
     }
 
     @Override
-    public ResponseEntity<ByteArrayResource> exportProuctionToExcel() {
-        List<Production> contracts = productionRepository.findAll();
+    public ResponseEntity<ByteArrayResource> exportProuctionToExcel(String keyword,
+            String risk, Integer code, Integer dateEffet) {
+        //List<Production> contracts = productionRepository.findAll();
+        List<ProductionDTO> contracts = searchContracts(keyword, risk, code, dateEffet);
 
         try (Workbook workbook = new XSSFWorkbook();
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -278,15 +279,15 @@ public class ProductionServiceImpl implements ProductionService {
             header.createCell(16).setCellValue("Remarques");
 
             CellStyle numberStyle = workbook.createCellStyle();
-            
+
             int rowNum = 1;
-            for (Production contract : contracts) {
+            for (ProductionDTO contract : contracts) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(contract.getNumeroContrat());
-                row.createCell(1).setCellValue(contract.getContact().getAssure());
+                row.createCell(1).setCellValue(contract.getContactName());
                 row.createCell(2).setCellValue(contract.getNature());
-                row.createCell(3).setCellValue(contract.getRisque().getRisqueName());
-                row.createCell(4).setCellValue(contract.getRisque().getCodeRisque());
+                row.createCell(3).setCellValue(contract.getRisqueName());
+                row.createCell(4).setCellValue(contract.getCodeRisque());
                 row.createCell(5).setCellValue(contract.getDateEffet().toString());
                 row.createCell(6).setCellValue(contract.getDateEcheance().toString());
                 row.createCell(7).setCellValue(Optional.ofNullable(contract.getMois()).orElse(0));
