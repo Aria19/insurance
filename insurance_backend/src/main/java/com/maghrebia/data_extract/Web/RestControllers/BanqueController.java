@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maghrebia.data_extract.Business.ServicesImpl.BanqueServiceImpl;
-import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DTO.BanqueDTO;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,5 +45,10 @@ public class BanqueController {
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } 
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<?> exportBanquesToExcel() {
+        return banqueServiceImpl.exportBanquesToExcel();
     }
 }

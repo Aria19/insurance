@@ -62,4 +62,10 @@ public class ProductionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/export")
+    public ResponseEntity<?> exportProuctionToExcel() {
+        return productionServiceImpl.exportProuctionToExcel();
+    }
+    
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maghrebia.data_extract.Business.ServicesImpl.ContactsServiceImpl;
+import com.maghrebia.data_extract.Business.Services.ContactsService;
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
 import com.maghrebia.data_extract.DTO.CreateContactDto;
@@ -26,15 +26,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/contacts")
 public class ContactsController {
 
-    private final ContactsServiceImpl contactsServiceImpl;
+    private final ContactsService contactsService;
 
-    public ContactsController(ContactsServiceImpl contactsServiceImpl) {
-        this.contactsServiceImpl = contactsServiceImpl;
+    public ContactsController(ContactsService contactsService) {
+        this.contactsService = contactsService;
     }
     
     @GetMapping("/view")
     public ResponseEntity<List<ContactsDTO>> getAllContacts(){
-        return ResponseEntity.ok(contactsServiceImpl.getAllContacts());
+        return ResponseEntity.ok(contactsService.getAllContacts());
     }
 
     @GetMapping("/search")
@@ -45,7 +45,7 @@ public class ContactsController {
             @RequestParam(value = "codeRisque", required = false) Integer codeRisque,
             @RequestParam(value = "numeroContrat", required = false) String numeroContrat) {
         
-        List<ContactsDTO> contacts = contactsServiceImpl.searchContacts(assure, msh, societe, codeRisque, numeroContrat);
+        List<ContactsDTO> contacts = contactsService.searchContacts(assure, msh, societe, codeRisque, numeroContrat);
         
         if (contacts.isEmpty()) {
             return ResponseEntity.noContent().build();  // No contacts found
@@ -56,23 +56,29 @@ public class ContactsController {
 
     @PostMapping("/add")
     public ResponseEntity<Contacts> addContact(@RequestBody CreateContactDto createContactDto) {
-        Contacts savedContact = contactsServiceImpl.saveContact(createContactDto);
+        Contacts savedContact = contactsService.saveContact(createContactDto);
         return new ResponseEntity<>(savedContact, HttpStatus.CREATED);
     }
 
     @PutMapping("update/{idContact}")
     public ResponseEntity<String> updateContact(@PathVariable Long idContact, @RequestBody ContactsDTO contactsDTO) {
-        contactsServiceImpl.updateContact(idContact, contactsDTO);
+        contactsService.updateContact(idContact, contactsDTO);
         return ResponseEntity.ok("Contact updated successfully");
     }
     
     @DeleteMapping("/delete/{idContact}")
     public ResponseEntity<String> deleteContact(@PathVariable Long idContact){
         try {
-            contactsServiceImpl.deleteContact(idContact);
+            contactsService.deleteContact(idContact);
             return ResponseEntity.ok("Contact with Id: " + idContact + " has been deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/export")
+    public ResponseEntity<?> exportContactToExcel() {
+        return contactsService.exportContactToExcel();
+    }
+    
 }

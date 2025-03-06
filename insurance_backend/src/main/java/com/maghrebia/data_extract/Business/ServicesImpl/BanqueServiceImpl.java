@@ -1,5 +1,7 @@
 package com.maghrebia.data_extract.Business.ServicesImpl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -7,8 +9,15 @@ import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -192,6 +201,45 @@ public class BanqueServiceImpl implements BanqueService {
                             updatedBanque.getRemarque());
                 })
                 .orElseThrow(() -> new RuntimeException("Banque with id " + idBanque + " not found"));
+    }
+
+    public ResponseEntity<ByteArrayResource> exportBanquesToExcel() {
+        // Fetch all banque transactions
+        List<Banque> banques = banqueRepository.findAll();
+
+        try (Workbook workbook = new XSSFWorkbook();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+            Sheet sheet = workbook.createSheet("Banque Transactions");
+
+            // Create a header row
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Date");
+            header.createCell(1).setCellValue("Montant");
+            header.createCell(2).setCellValue("Mode Payement");
+
+            // Fill data rows
+            int rowNum = 1;
+            for (Banque banque : banques) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(banque.getDate().toString());
+                row.createCell(1).setCellValue(banque.getMontant());
+                row.createCell(2).setCellValue(banque.getModePayement()); // Fixed index
+            }
+
+            // Write workbook to byte array
+            workbook.write(outputStream);
+            byte[] byteArray = outputStream.toByteArray();
+
+            ByteArrayResource resource = new ByteArrayResource(byteArray);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=banques_transactions.xlsx")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 }

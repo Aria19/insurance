@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 
 import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
@@ -16,4 +18,5 @@ public interface ProductionService {
     public List<ProductionDTO> searchContracts(String keyword, String risk, Integer code);
     public void updateProduction(Long idProduction, ProductionDTO productionDTO);
     public String deleteProduction(Long idProduction);
+    public ResponseEntity<ByteArrayResource> exportProuctionToExcel();
 }

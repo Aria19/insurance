@@ -1,21 +1,31 @@
 package com.maghrebia.data_extract.Business.ServicesImpl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maghrebia.data_extract.Business.Services.ProductionService;
-import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
@@ -25,9 +35,6 @@ import com.maghrebia.data_extract.DTO.ProductionDTO;
 import com.maghrebia.data_extract.Mapper.ProductionMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
-import com.maghrebia.data_extract.exceptions.ResourceNotFoundException;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ProductionServiceImpl implements ProductionService {
@@ -241,6 +248,86 @@ public class ProductionServiceImpl implements ProductionService {
 
                     productionRepository.save(currentContract);
                 });
+    }
+
+    @Override
+    public ResponseEntity<ByteArrayResource> exportProuctionToExcel() {
+        List<Production> contracts = productionRepository.findAll();
+
+        try (Workbook workbook = new XSSFWorkbook();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Contracts");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Contrat");
+            header.createCell(1).setCellValue("Assure");
+            header.createCell(2).setCellValue("Nature");
+            header.createCell(3).setCellValue("Risque");
+            header.createCell(4).setCellValue("Code");
+            header.createCell(5).setCellValue("Effet");
+            header.createCell(6).setCellValue("Echeance");
+            header.createCell(7).setCellValue("Mois");
+            header.createCell(8).setCellValue("Duree");
+            header.createCell(9).setCellValue("Mode P");
+            header.createCell(10).setCellValue("NBR");
+            header.createCell(11).setCellValue("N Cheque");
+            header.createCell(12).setCellValue("Date Du Cheque");
+            header.createCell(13).setCellValue("Prime Nette");
+            header.createCell(14).setCellValue("Prime");
+            header.createCell(15).setCellValue("Commission");
+            header.createCell(16).setCellValue("Remarques");
+
+            CellStyle numberStyle = workbook.createCellStyle();
+            
+            int rowNum = 1;
+            for (Production contract : contracts) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(contract.getNumeroContrat());
+                row.createCell(1).setCellValue(contract.getContact().getAssure());
+                row.createCell(2).setCellValue(contract.getNature());
+                row.createCell(3).setCellValue(contract.getRisque().getRisqueName());
+                row.createCell(4).setCellValue(contract.getRisque().getCodeRisque());
+                row.createCell(5).setCellValue(contract.getDateEffet().toString());
+                row.createCell(6).setCellValue(contract.getDateEcheance().toString());
+                row.createCell(7).setCellValue(Optional.ofNullable(contract.getMois()).orElse(0));
+                row.createCell(8).setCellValue(contract.getDureeContrat());
+                row.createCell(9).setCellValue(contract.getModePayement());
+                row.createCell(10).setCellValue(Optional.ofNullable(contract.getNombreCheque()).orElse(0));
+                row.createCell(11).setCellValue(contract.getNumeroCheque());
+                String dateDuCheque = Optional.ofNullable(contract.getDateDuCheque())
+                        .map(Object::toString)
+                        .orElse("N/A");
+                row.createCell(12).setCellValue(dateDuCheque);
+
+                Cell primeNetteCell = row.createCell(13);
+                primeNetteCell.setCellValue(contract.getPrimeNette());
+                primeNetteCell.setCellStyle(numberStyle);
+
+                Cell primeCell = row.createCell(14);
+                primeCell.setCellValue(contract.getPrime());
+                primeCell.setCellStyle(numberStyle);
+
+                Cell commissionCell = row.createCell(15);
+                commissionCell.setCellValue(contract.getCommission());
+                commissionCell.setCellStyle(numberStyle);
+
+                row.createCell(16).setCellValue(contract.getRemarques());
+            }
+
+            workbook.write(outputStream);
+
+            byte[] byteArray = outputStream.toByteArray();
+
+            ByteArrayResource resource = new ByteArrayResource(byteArray);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contracts.xlsx")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 }

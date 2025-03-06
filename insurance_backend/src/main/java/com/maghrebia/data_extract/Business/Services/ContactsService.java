@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
@@ -19,5 +21,6 @@ public interface ContactsService {
     public Contacts saveContact(CreateContactDto contactsDTO);
     public void updateContact(Long idContact, ContactsDTO contactDTO);
     public String deleteContact(Long idContact);
+    public ResponseEntity<ByteArrayResource> exportContactToExcel();
     
 }

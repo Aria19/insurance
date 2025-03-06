@@ -1,5 +1,6 @@
 package com.maghrebia.data_extract.Business.ServicesImpl;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -7,8 +8,16 @@ import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -236,6 +245,56 @@ public class ContactsServiceImpl implements ContactsService {
 
                     contactsRepository.save(currentContact);
                 });
+    }
+
+    @Override
+    public ResponseEntity<ByteArrayResource> exportContactToExcel() {
+        List<Contacts> contacts = contactsRepository.findAll();
+
+        try (Workbook workbook = new XSSFWorkbook();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+            Sheet sheet = workbook.createSheet("Contacts");
+
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Assuré");
+            header.createCell(1).setCellValue("Société");
+            header.createCell(2).setCellValue("Tél");
+            header.createCell(3).setCellValue("E-mail");
+            header.createCell(4).setCellValue("N MSH");
+            header.createCell(5).setCellValue("Mot de passe");
+            header.createCell(6).setCellValue("CIN");
+            header.createCell(7).setCellValue("Catre séjour");
+            header.createCell(8).setCellValue("Passeport");
+            header.createCell(9).setCellValue("Matricule fiscale");
+
+            int rowNum = 1;
+            for (Contacts contact : contacts) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(contact.getAssure());
+                row.createCell(1).setCellValue(contact.getSociete());
+                row.createCell(2).setCellValue(contact.getTelephone());
+                row.createCell(3).setCellValue(contact.getEmail());
+                row.createCell(4).setCellValue(contact.getMsh());
+                row.createCell(5).setCellValue(contact.getMotDePasse());
+                row.createCell(6).setCellValue(contact.getCin());
+                row.createCell(7).setCellValue(contact.getCarteSejour());
+                row.createCell(8).setCellValue(contact.getPasseport());
+                row.createCell(9).setCellValue(contact.getMatriculeFiscale());
+            }
+
+            workbook.write(outputStream);
+            byte[] byteArray = outputStream.toByteArray();
+            ByteArrayResource resource = new ByteArrayResource(byteArray);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=contacts.xlsx")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 }
