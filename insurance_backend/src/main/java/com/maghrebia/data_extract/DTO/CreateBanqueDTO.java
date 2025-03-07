@@ -15,6 +15,7 @@ public class CreateBanqueDTO {
     private Date date;
     private Float montant;
     private String terme;	
+    private String modePayement;
     private String nt;	
     private String bvBanque;	
     private String bvPortail;	

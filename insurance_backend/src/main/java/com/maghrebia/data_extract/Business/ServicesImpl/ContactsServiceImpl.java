@@ -155,7 +155,6 @@ public class ContactsServiceImpl implements ContactsService {
         // Save contact first to generate an ID
         Contacts savedContact = contactsRepository.save(contact);
 
-        // Convert DTO Contracts to EntitiesProduction contract = new Production();
         Production contract = new Production();
         Optional<Risque> risqueOpt = risqueServiceImpl
                 .findBycodeRisque(contactDTO.getContracts().get(0).getCodeRisque());
@@ -168,10 +167,12 @@ public class ContactsServiceImpl implements ContactsService {
             contract.setRisque(risque);
             contract.setDateEffet(contactDTO.getContracts().get(0).getDateEffet());
             contract.setDateEcheance(contactDTO.getContracts().get(0).getDateEcheance());
+            contract.setMois(contactDTO.getContracts().get(0).getMois());
             contract.setDureeContrat(contactDTO.getContracts().get(0).getDureeContrat());
             contract.setModePayement(contactDTO.getContracts().get(0).getModePayement());
             contract.setNombreCheque(contactDTO.getContracts().get(0).getNombreCheque());
             contract.setNumeroCheque(contactDTO.getContracts().get(0).getNumeroCheque());
+            contract.setDateDuCheque(contactDTO.getContracts().get(0).getDateDuCheque());
             contract.setPrimeNette(contactDTO.getContracts().get(0).getPrimeNette());
             contract.setPrime(contactDTO.getContracts().get(0).getPrime());
             contract.setCommission(contactDTO.getContracts().get(0).getCommission());
@@ -188,7 +189,12 @@ public class ContactsServiceImpl implements ContactsService {
         banque.setDate(contactDTO.getTransactions().get(0).getDate());
         banque.setMontant(contactDTO.getTransactions().get(0).getMontant());
         banque.setTerme(contactDTO.getTransactions().get(0).getTerme());
+        banque.setModePayement(contactDTO.getTransactions().get(0).getModePayement());
         banque.setNt(contactDTO.getTransactions().get(0).getNt());
+        banque.setBvBanque(contactDTO.getTransactions().get(0).getBvBanque());
+        banque.setBvPortail(contactDTO.getTransactions().get(0).getBvPortail());
+        banque.setRemarque(contactDTO.getTransactions().get(0).getRemarque());
+        
         banque.setContact(savedContact); // Link banque to saved contact
 
         // Link the Banque to the contract via the contract number (produced above)
