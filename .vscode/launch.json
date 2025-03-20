@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DataExtractApplication<data_extract>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.maghrebia.data_extract.DataExtractApplication",
+            "projectName": "data_extract",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

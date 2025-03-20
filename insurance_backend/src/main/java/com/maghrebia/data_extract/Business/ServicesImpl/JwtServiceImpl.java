@@ -1,82 +1,76 @@
 package com.maghrebia.data_extract.Business.ServicesImpl;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-
-import org.springframework.security.oauth2.jwt.*;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.maghrebia.data_extract.Business.Services.JwtService;
 
-import org.springframework.security.core.Authentication;
-import java.time.Instant;
-import java.util.stream.Collectors;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+
+import javax.crypto.SecretKey;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    private final JwtEncoder encoder;
+    private static final String SECRET_KEY = "YOURSECRETMYKEYLOVEBASE643FORYOUENCOISENDLESSDEDHERE";
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+    // 🔹 Generate a JWT token (Updated version)
+    public String generateToken(String email, String role) {
+        return Jwts.builder()
+                .subject(email)
+                .claim("role", role)  // Adding the role as a custom claim
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Token expiration time
+                .signWith(getSigningKey())
+                .compact();
+    }
+    
 
-    @Value("${jwt.cookie-name}")
-    private String jwtCookieName;
-
-    public JwtServiceImpl(JwtEncoder encoder) {
-        this.encoder = encoder;
+    // 🔹 Extract username from JWT
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    @Override
-    public String generateToken(Authentication authentication) {
-        try {
-            Instant now = Instant.now();
-            long expiry = jwtExpiration;
-            String scope = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(" "));
-
-            // Create the JWT claims
-            JwtClaimsSet claims = JwtClaimsSet.builder()
-                    .issuer("self")
-                    .issuedAt(now)
-                    .expiresAt(now.plusSeconds(expiry))
-                    .subject(authentication.getName())
-                    .claim("scope", scope)
-                    .build();
-
-            // Sign the claims with the RSA private key using RS256
-            return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate JWT token", e);
-        }
+    // 🔹 Extract claims
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    @Override
-    public ResponseCookie generateJwtCookie(String jwt) {
-        try {
-            return ResponseCookie.from(jwtCookieName, jwt)
-                    .path("/")
-                    .maxAge(24 * 60 * 60) // 24 hours
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("Strict")
-                    .build();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate JWT cookie", e);
-        }
+    // 🔹 Validate JWT token
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    @Override
-    public ResponseCookie getCleanJwtCookie() {
-        try {
-            return ResponseCookie.from(jwtCookieName, "")
-                    .path("/")
-                    .build();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to clean JWT cookie", e);
-        }
+    // 🔹 Check if token is expired
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    // 🔹 Extract expiration date
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    // 🔹 Extract all claims
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey()) // ✅ Updated: Uses verifyWith() instead of setSigningKey()
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // 🔹 Get the signing key (Updated for better security)
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
 

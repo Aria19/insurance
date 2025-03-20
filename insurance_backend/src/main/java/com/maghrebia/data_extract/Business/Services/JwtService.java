@@ -1,11 +1,16 @@
 package com.maghrebia.data_extract.Business.Services;
 
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.Authentication;
+import java.util.function.Function;
+
+import org.springframework.security.core.userdetails.UserDetails;
+
+import io.jsonwebtoken.Claims;
 
 public interface JwtService {
 
-    public String generateToken(Authentication authentication);
-    public ResponseCookie generateJwtCookie(String jwt);
-    public ResponseCookie getCleanJwtCookie();
+    public String generateToken(String email, String role);
+    public String extractUsername(String token);
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
+    public boolean validateToken(String token, UserDetails userDetails);
+    public Claims extractAllClaims(String token);
 }

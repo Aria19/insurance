@@ -1,0 +1,89 @@
+<header>
+
+    <nav id="sidebarMenu" aria-label="sidebar" class="collapse d-lg-block sidebar collapse bg-white">
+        <div class="position-sticky">
+
+            <img src="assets/maghrebia.png" height="40" alt="Logo" class="mt-5 mb-5 pl-4" loading="lazy" />
+
+            <div class="list-group list-group-flush mx-3 mt-5">
+                <a routerLink="/admin" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                    <i class="fas fa-tachometer-alt fa-fw me-3"></i><span>Main dashboard</span>
+                </a>
+                <a routerLink="/admin/profile" class="list-group-item list-group-item-action py-2 ripple"><i
+                        class="fas fa-user-circle fa-fw me-3"></i><span>Profile</span></a>
+                <a routerLink="/admin/settings" class="list-group-item list-group-item-action py-2 ripple"><i
+                        class="fas fa-wrench fa-fw me-3"></i><span>Settings</span></a>
+                <a routerLink="/admin/users" class="list-group-item list-group-item-action py-2 ripple"
+                    data-bs-toggle="collapse" aria-expanded="false" aria-controls="usersSubmenu" *ngIf="isAdmin()">
+                    <i class="fas fa-users fa-fw me-3"></i><span>Users</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-calendar fa-fw me-3"></i><span>Contracts</span>
+                </a>
+                <a routerLink="/admin/contacts" class="list-group-item list-group-item-action py-2 ripple"
+                    data-bs-toggle="collapse" aria-expanded="false" aria-controls="usersSubmenu">
+                    <i class="fas fa-users fa-fw me-3"></i><span>Contacts</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-chart-area fa-fw me-3"></i><span>Transactions</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <nav id="main-navbar" aria-label="navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+
+        <div class="container-fluid">
+            <button class="btn btn-primary d-lg-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#sidebarMenu" aria-expanded="false" aria-controls="sidebarMenu">
+                <i class="fas fa-bars"></i>
+            </button>
+
+
+            <form class="d-none d-md-flex input-group w-auto my-auto">
+                <input autocomplete="off" type="search" class="form-control rounded"
+                    placeholder='Search (ctrl + "/" to focus)' style="min-width: 300px;" />
+                <span class="input-group-text border-0"><i class="fas fa-search"></i></span>
+            </form>
+
+
+            <form (ngSubmit)="onLogout()">
+                <ul class="navbar-nav ms-auto d-flex flex-rowd align-items-center">
+
+                    <div class="dropdown">
+                        <button class="btn profile-btn d-flex align-items-center dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="assets/user_default.png" class="rounded-circle profile-img" height="40"
+                                alt="User" />
+                            <div class="ms-2 text-start">
+                                <div class="fw-bold">Naima Dellai</div>
+                                <small class="text-muted">ADMIN</small>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu shadow">
+                            <li><a class="dropdown-item d-flex align-items-center" routerLink="/profile"><i
+                                        class="bi bi-person me-2"></i> My Profile</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" routerLink="/edit-profile"><i
+                                        class="bi bi-pencil me-2"></i> Edit Profile</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" routerLink="/support"><i
+                                        class="bi bi-question-circle me-2"></i> Help & Support</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><button class="dropdown-item d-flex align-items-center text-danger"><i
+                                        class="bi bi-box-arrow-right me-2"></i> Log out</button></li>
+                        </ul>
+                    </div>
+
+                </ul>
+            </form>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</header>
