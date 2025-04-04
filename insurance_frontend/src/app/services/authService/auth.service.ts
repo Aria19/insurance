@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 interface LoginResponse {
   token: string;
   role: string;
+  username: string;
 }
 
 @Injectable({
@@ -26,6 +27,12 @@ export class AuthService {
         // Store token & role in localStorage
         localStorage.setItem('token', response.token);
         localStorage.setItem('role', response.role);
+
+        if (response.username) {  // Ensure name exists before storing
+          localStorage.setItem('username', response.username);
+        } else {
+          console.warn('No name found in login response');
+        }
       })
     );
   }

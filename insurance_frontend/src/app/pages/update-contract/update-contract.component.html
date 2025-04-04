@@ -1,0 +1,111 @@
+<form (ngSubmit)="updateContract()">
+  <h2 class="text-center mb-4">Update Contract</h2>
+  <!-- First Row -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="numeroContrat" class="form-label">Contract Number:</label>
+      <input id="numeroContrat" class="form-control" [(ngModel)]="contract.numeroContrat" name="numeroContrat"
+        required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="contactName" class="form-label">Contact Name:</label>
+      <input id="contactName" class="form-control" [(ngModel)]="contract.contactName" name="contactName" required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="nature" class="form-label">Nature:</label>
+      <input id="nature" class="form-control" [(ngModel)]="contract.nature" name="nature" required />
+    </div>
+  </div>
+
+  <!-- Second Row -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="risqueName" class="form-label">Risk Name:</label>
+      <input id="risqueName" class="form-control" [(ngModel)]="contract.risqueName" name="risqueName" required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="codeRisque" class="form-label">Risk Code:</label>
+      <input id="codeRisque" class="form-control" type="number" [(ngModel)]="contract.codeRisque" name="codeRisque"
+        required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="dateEffet" class="form-label">Date Effet:</label>
+      <input id="dateEffet" class="form-control" type="date" [(ngModel)]="contract.dateEffet" name="dateEffet"
+        required />
+    </div>
+  </div>
+
+  <!-- Third Row -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="dateEcheance" class="form-label">Date Echeance:</label>
+      <input id="dateEcheance" class="form-control" type="date" [(ngModel)]="contract.dateEcheance" name="dateEcheance"
+        required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="modePayement" class="form-label">Payment Mode:</label>
+      <select id="modePayement" class="form-select" [(ngModel)]="contract.modePayement" name="modePayement" required>
+        <option value="Cheque">Cheque</option>
+        <option value="Virement">Virement</option>
+        <option value="Cash">Cash</option>
+      </select>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="nombreCheque" class="form-label">Number of Cheques:</label>
+      <input id="nombreCheque" class="form-control" type="number" [(ngModel)]="contract.nombreCheque"
+        name="nombreCheque" />
+    </div>
+  </div>
+
+  <!-- Fourth Row -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="numeroCheque" class="form-label">Cheque Number:</label>
+      <input id="numeroCheque" class="form-control" [(ngModel)]="contract.numeroCheque" name="numeroCheque" />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="dateDuCheque" class="form-label">Cheque Date:</label>
+      <input id="dateDuCheque" class="form-control" type="date" [(ngModel)]="contract.dateDuCheque"
+        name="dateDuCheque" />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="primeNette" class="form-label">Prime Nette:</label>
+      <input id="primeNette" class="form-control" type="number" step="0.01" [(ngModel)]="contract.primeNette"
+        name="primeNette" required />
+    </div>
+  </div>
+
+  <!-- Fifth Row -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="prime" class="form-label">Prime:</label>
+      <input id="prime" class="form-control" type="number" step="0.01" [(ngModel)]="contract.prime" name="prime"
+        required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="commission" class="form-label">Commission:</label>
+      <input id="commission" class="form-control" type="number" step="0.01" [(ngModel)]="contract.commission"
+        name="commission" required />
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <label for="remarques" class="form-label">Remarks:</label>
+      <textarea id="remarques" class="form-control" [(ngModel)]="contract.remarques" name="remarques"></textarea>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex justify-content-between">
+    <button type="submit" class="btn btn-success">Update</button>
+    <button type="button" class="btn btn-secondary" routerLink="/dashboard/contracts">Cancel</button>
+  </div>
+</form>

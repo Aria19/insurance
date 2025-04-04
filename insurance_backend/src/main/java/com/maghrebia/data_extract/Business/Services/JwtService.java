@@ -8,7 +8,7 @@ import io.jsonwebtoken.Claims;
 
 public interface JwtService {
 
-    public String generateToken(String email, String role);
+    public String generateToken(String email, String role, String username);
     public String extractUsername(String token);
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
     public boolean validateToken(String token, UserDetails userDetails);

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/authService/auth.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -10,10 +10,12 @@ export class DashboardLayoutComponent implements OnInit {
   
   constructor(private authService: AuthService) {}
   
+  name: string | null = '';
   role: string | null = '';
 
   ngOnInit(): void {
-    this.role = localStorage.getItem('role'); // Retrieve role from localStorage
+    this.name = localStorage.getItem('username');
+    this.role = localStorage.getItem('role');
   }
 
   isAdmin(): boolean {

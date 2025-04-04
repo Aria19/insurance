@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     if (userOptional.isPresent() && passwordEncoder.matches(password, userOptional.get().getPassword())) {
         User user = userOptional.get();
-        String token = jwtService.generateToken(email, user.getRole()); // Generate token with role
+        String token = jwtService.generateToken(email, user.getRole(), user.getUsername()); // Generate token with role
 
-        return new LoginResponse(token, user.getRole()); // Return token & role
+        return new LoginResponse(token, user.getRole(), user.getUsername()); // Return token & role
     } else {
         throw new RuntimeException("Invalid credentials");
     }

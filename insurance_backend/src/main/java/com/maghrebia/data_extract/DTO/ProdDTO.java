@@ -9,14 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductionDTO {
+public class ProdDTO {
 
     private Long id;
     private String numeroContrat;
-    private String contactName;
-    private String nature;	
-    private String risqueName;
-    private Integer codeRisque;		
+    private String nature;			
     private Date dateEffet;	
     private Date dateEcheance;
     private Integer mois;
@@ -29,5 +26,4 @@ public class ProductionDTO {
     private float prime;		
     private float commission;
     private String remarques;
-
 }

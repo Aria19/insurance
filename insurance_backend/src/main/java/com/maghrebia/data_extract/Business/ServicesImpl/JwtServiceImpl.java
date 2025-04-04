@@ -20,10 +20,11 @@ public class JwtServiceImpl implements JwtService {
     private static final String SECRET_KEY = "YOURSECRETMYKEYLOVEBASE643FORYOUENCOISENDLESSDEDHERE";
 
     // 🔹 Generate a JWT token (Updated version)
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, String role, String username) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)  // Adding the role as a custom claim
+                .claim("username", username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Token expiration time
                 .signWith(getSigningKey())

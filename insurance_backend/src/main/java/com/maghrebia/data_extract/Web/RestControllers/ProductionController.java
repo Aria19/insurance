@@ -1,5 +1,6 @@
 package com.maghrebia.data_extract.Web.RestControllers;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,24 +12,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.maghrebia.data_extract.Business.ServicesImpl.ProductionServiceImpl;
+import com.maghrebia.data_extract.Business.Services.ProductionService;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/productions")
+@RequestMapping("/productions")
 public class ProductionController {
 
-    private final ProductionServiceImpl productionServiceImpl;
+    private final ProductionService productionService;
 
-    public ProductionController(ProductionServiceImpl productionServiceImpl) {
-        this.productionServiceImpl = productionServiceImpl;
+    public ProductionController(ProductionService productionService) {
+        this.productionService = productionService;
     }
 
     @GetMapping("/view")
     public ResponseEntity<List<ProductionDTO>> getAllProductions() {
-        return ResponseEntity.ok(productionServiceImpl.getAllProductions());
+        return ResponseEntity.ok(productionService.getAllProductions());
     }
 
     @GetMapping("/search")
@@ -38,8 +39,8 @@ public class ProductionController {
             @RequestParam(value = "codeRisque", required = false) Integer codeRisque,
             @RequestParam(value = "dateEffet", required = false) Integer dateEffet) {
 
-        List<ProductionDTO> contracts = productionServiceImpl.searchContracts(keyword, risque, 
-        codeRisque, dateEffet);
+        List<ProductionDTO> contracts = productionService.searchContracts(keyword, risque,
+                codeRisque, dateEffet);
 
         if (contracts.isEmpty()) {
             return ResponseEntity.noContent().build(); // No contracts found
@@ -51,14 +52,15 @@ public class ProductionController {
     @PutMapping("update/{idProduction}")
     public ResponseEntity<String> updateProduction(@PathVariable Long idProduction,
             @RequestBody ProductionDTO productionDTO) {
-        productionServiceImpl.updateProduction(idProduction, productionDTO);
-        return ResponseEntity.ok("Banque updated successfully");
+        productionService.updateProduction(idProduction, productionDTO);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{idProduction}")
     public ResponseEntity<String> deleteProduction(@PathVariable Long idProduction) {
         try {
-            productionServiceImpl.deleteProduction(idProduction);
+            productionService.deleteProduction(idProduction);
             return ResponseEntity.ok("Production with Id " + idProduction + "has been deleted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -71,7 +73,7 @@ public class ProductionController {
             @RequestParam(required = false) String risk,
             @RequestParam(required = false) Integer code,
             @RequestParam(required = false) Integer dateEffet) {
-        return productionServiceImpl.exportProuctionToExcel(keyword, risk, code, dateEffet);
+        return productionService.exportProuctionToExcel(keyword, risk, code, dateEffet);
     }
 
 }

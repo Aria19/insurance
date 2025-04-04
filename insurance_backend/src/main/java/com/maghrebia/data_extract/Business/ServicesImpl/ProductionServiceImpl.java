@@ -29,23 +29,31 @@ import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
 import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
+import com.maghrebia.data_extract.DAO.Repositories.ContactsRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
+import com.maghrebia.data_extract.DAO.Repositories.RisqueRepository;
+import com.maghrebia.data_extract.DTO.ProdDTO;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
 import com.maghrebia.data_extract.Mapper.ProductionMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ProductionServiceImpl implements ProductionService {
 
     final ProductionRepository productionRepository;
+    final ContactsRepository contactRepository;
+    final RisqueRepository risqueRepository;
     final BanqueRepository banqueRepository;
     final ProductionMapper productionMapper;
     final ContactsServiceImpl contactsServiceImpl;
     final RisqueServiceImpl risqueServiceImpl;
     private final Logger logger = LoggerFactory.getLogger(ProductionServiceImpl.class);
 
-    public ProductionServiceImpl(ProductionRepository productionRepository,
+    /* public ProductionServiceImpl(ProductionRepository productionRepository,
             BanqueRepository banqueRepository,
             ProductionMapper productionMapper,
             ContactsServiceImpl contactsServiceImpl,
@@ -55,7 +63,7 @@ public class ProductionServiceImpl implements ProductionService {
         this.productionMapper = productionMapper;
         this.contactsServiceImpl = contactsServiceImpl;
         this.risqueServiceImpl = risqueServiceImpl;
-    }
+    } */
 
     @Override
     public void importProduction(Sheet sheet) {
@@ -154,6 +162,7 @@ public class ProductionServiceImpl implements ProductionService {
     public List<ProductionDTO> getAllProductions() {
         List<Production> productions = productionRepository.findAll();
         return productions.stream().map(production -> new ProductionDTO(
+                production.getIdProduction(),
                 production.getNumeroContrat(),
                 production.getContact().getAssure(),
                 production.getNature(),
@@ -183,6 +192,7 @@ public class ProductionServiceImpl implements ProductionService {
                 .searchContracts(keyword, risk, code, dateEffet)
                 .stream()
                 .map(production -> new ProductionDTO(
+                        production.getIdProduction(),
                         production.getNumeroContrat(),
                         production.getContact().getAssure(),
                         production.getNature(),
@@ -227,27 +237,42 @@ public class ProductionServiceImpl implements ProductionService {
         }
     }
 
-    @Override
-    public void updateProduction(Long idProduction, ProductionDTO productionDTO) {
-        productionRepository.findById(idProduction)
-                .ifPresent(currentContract -> {
-                    currentContract.setNature(productionDTO.getNature());
-                    currentContract.setDateEffet(productionDTO.getDateEffet());
-                    currentContract.setDateEcheance(productionDTO.getDateEcheance());
-                    currentContract.setMois(productionDTO.getMois());
-                    currentContract.setDureeContrat(productionDTO.getDureeContrat());
-                    currentContract.setModePayement(productionDTO.getModePayement());
-                    currentContract.setNombreCheque(productionDTO.getNombreCheque());
-                    currentContract.setNumeroCheque(productionDTO.getNumeroCheque());
-                    currentContract.setDateDuCheque(productionDTO.getDateDuCheque());
-                    currentContract.setPrimeNette(productionDTO.getPrimeNette());
-                    currentContract.setPrime(productionDTO.getPrime());
-                    currentContract.setCommission(productionDTO.getCommission());
-                    currentContract.setRemarques(productionDTO.getRemarques());
-
-                    productionRepository.save(currentContract);
-                });
+    public void updateProduction(Long id, ProductionDTO dto) {
+        Production production = productionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Production not found"));
+    
+        // Update production fields
+        production.setNumeroContrat(dto.getNumeroContrat());
+        production.setNature(dto.getNature());
+        production.setDateEffet(dto.getDateEffet());
+        production.setDateEcheance(dto.getDateEcheance());
+        production.setMois(dto.getMois());
+        production.setDureeContrat(dto.getDureeContrat());
+        production.setModePayement(dto.getModePayement());
+        production.setNombreCheque(dto.getNombreCheque());
+        production.setNumeroCheque(dto.getNumeroCheque());
+        production.setDateDuCheque(dto.getDateDuCheque());
+        production.setPrimeNette(dto.getPrimeNette());
+        production.setPrime(dto.getPrime());
+        production.setCommission(dto.getCommission());
+        production.setRemarques(dto.getRemarques());
+    
+        // Fetch and update related entities (if needed)
+        if (dto.getCodeRisque() != null) {
+            Risque risque = risqueRepository.findBycodeRisque(dto.getCodeRisque())
+                .orElseThrow(() -> new RuntimeException("Risque not found"));
+            production.setRisque(risque);
+        }
+    
+        if (dto.getContactName() != null) {
+            Contacts contact = contactRepository.findByAssure(dto.getContactName())
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
+            production.setContact(contact);
+        }
+    
+        productionRepository.save(production);
     }
+    
 
     @Override
     public ResponseEntity<ByteArrayResource> exportProuctionToExcel(String keyword,
