@@ -1,0 +1,109 @@
+<div class="container">
+    <button class="btn btn-secondary mb-3" (click)="goBack()">← Back</button>
+
+    <div *ngIf="productionsWithTransactions.length > 0; else noContracts">
+        <div *ngFor="let item of productionsWithTransactions" class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                Contract Number: {{ item.production.numeroContrat }}
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Start Date:</label>
+                            <input class="form-control" [value]="item.production.dateEffet | date:'yyyy-MM-dd'"
+                                disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">End Date:</label>
+                            <input class="form-control" [value]="item.production.dateEcheance | date:'yyyy-MM-dd'"
+                                disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Payment Method:</label>
+                            <input class="form-control" [value]="item.production.modePayement" disabled />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Cheque Number:</label>
+                            <input class="form-control" [value]="item.production.numeroCheque" disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cheque Date:</label>
+                            <input class="form-control" [value]="item.production.dateDuCheque | date:'yyyy-MM-dd'"
+                                disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Net Prime:</label>
+                            <input class="form-control" [value]="item.production.primeNette" disabled />
+                        </div>
+                    </div>
+                </form>
+
+                <div *ngIf="item.transactions.length > 0">
+                    <h6 class="mt-4">Transactions:</h6>
+                    <div *ngFor="let tx of item.transactions" class="border rounded p-3 mb-3 bg-light">
+                        <form>
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Date:</label>
+                                    <input class="form-control" [value]="tx.date | date:'yyyy-MM-dd'" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Montant:</label>
+                                    <input class="form-control" [value]="tx.montant" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Terme:</label>
+                                    <input class="form-control" [value]="tx.terme" disabled />
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Mode Payement:</label>
+                                    <input class="form-control" [value]="tx.modePayement" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">NT:</label>
+                                    <input class="form-control" [value]="tx.nt" disabled />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">BV Banque:</label>
+                                    <input class="form-control" [value]="tx.bvBanque" disabled />
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">BV Portail:</label>
+                                    <input class="form-control" [value]="tx.bvPortail" disabled />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Feuille de Caisse:</label>
+                                    <input class="form-control" [value]="tx.numeroFeuilleDeCaisse" disabled />
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Remarque:</label>
+                                <textarea class="form-control" [value]="tx.remarque" disabled></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div *ngIf="item.transactions.length === 0" class="text-muted mt-2">
+                    No transactions for this contract.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #noContracts>
+        <div class="alert alert-warning">No contracts found for this contact.</div>
+    </ng-template>
+    
+    <div class="d-flex justify-content-end">
+        <button routerLink="/dashboard/contracts/add" class="btn btn-success mt-3 mb-3"> Add new Contract
+        </button>
+    </div>
+</div>

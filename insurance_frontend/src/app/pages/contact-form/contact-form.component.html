@@ -1,0 +1,246 @@
+<form [formGroup]="contactForm" (ngSubmit)="submitForm()" class="container">
+
+  <h4 class="my-4">Informations du Contact</h4>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label>Email</label>
+      <input type="email" class="form-control"
+        [ngClass]="{ 'is-invalid': contactForm.get('email')?.invalid && (contactForm.get('email')?.touched || contactForm.get('email')?.dirty) }"
+        formControlName="email" />
+      <div class="invalid-feedback" *ngIf="contactForm.get('email')?.errors?.['required']">
+        Email est requis.
+      </div>
+      <div class="invalid-feedback" *ngIf="contactForm.get('email')?.errors?.['email']">
+        Format d'email invalide.
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Téléphone</label>
+      <input type="text" class="form-control" formControlName="telephone"
+        [ngClass]="{ 'is-invalid': contactForm.get('telephone')?.invalid && (contactForm.get('telephone')?.touched || contactForm.get('telephone')?.dirty) }" />
+      <div class="invalid-feedback" *ngIf="contactForm.get('telephone')?.errors?.['required']">
+        Le numéro de téléphone est requis.
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Mot de passe</label>
+      <input type="password" class="form-control" formControlName="motDePasse"
+        [ngClass]="{ 'is-invalid': contactForm.get('motDePasse')?.invalid && contactForm.get('motDePasse')?.touched }" />
+      <div class="invalid-feedback"
+        *ngIf="contactForm.get('motDePasse')?.touched && contactForm.get('motDePasse')?.errors">
+        <div *ngIf="contactForm.get('motDePasse')?.errors?.['required']">
+          Le mot de passe est requis.
+        </div>
+        <div *ngIf="contactForm.get('motDePasse')?.errors?.['minlength']">
+          Le mot de passe doit contenir au moins 8 caractères.
+        </div>
+        <div *ngIf="contactForm.get('motDePasse')?.errors?.['pattern']">
+          Le mot de passe doit contenir au moins une lettre et un caractère spécial.
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Assuré</label>
+      <input type="text" class="form-control" formControlName="assure" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Société</label>
+      <input type="text" class="form-control" formControlName="societe" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>MSH</label>
+      <input type="text" class="form-control" formControlName="msh" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>CIN</label>
+      <input type="text" class="form-control" formControlName="cin" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Carte Séjour</label>
+      <input type="text" class="form-control" formControlName="carteSejour" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Passeport</label>
+      <input type="text" class="form-control" formControlName="passeport" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Matricule Fiscale</label>
+      <input type="text" class="form-control" formControlName="matriculeFiscale" />
+    </div>
+  </div>
+
+  <h4 class="mt-4 mb-3">Contrats</h4>
+  <div formArrayName="contracts">
+    <div *ngFor="let contract of contracts.controls; let i = index" [formGroupName]="i"
+      class="border p-4 mb-4 rounded shadow-sm">
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label>Code Risque</label>
+          <select class="form-select" formControlName="codeRisque"
+            [ngClass]="{ 'is-invalid': contract.get('codeRisque')?.invalid && (contract.get('codeRisque')?.touched || contract.get('codeRisque')?.dirty) }">
+            <option [ngValue]="null">-- Sélectionnez un risque --</option>
+            <option *ngFor="let risque of risques" [ngValue]="risque.idRisque">
+              {{ risque.risqueName }} ({{ risque.codeRisque }})
+            </option>
+          </select>
+          <div class="invalid-feedback" *ngIf="contract.get('codeRisque')?.errors?.['required']">
+            Code Risque est requis.
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Nature</label>
+          <select class="form-control" formControlName="nature">
+            <option value="">-- Sélectionnez une option --</option>
+            <option value="AVENANT">AVENANT</option>
+            <option value="COMPTE">COMPTE</option>
+            <option value="LIQUIDATION">LIQUIDATION</option>
+            <option value="TC">TC</option>
+            <option value="TERME">TERME</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Date Effet</label>
+          <input type="date" class="form-control" formControlName="dateEffet" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Date Échéance</label>
+          <input type="date" class="form-control" formControlName="dateEcheance" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Mois</label>
+          <input class="form-control" formControlName="mois" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Durée du Contrat</label>
+          <input class="form-control" formControlName="dureeContrat" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Mode de Paiement</label>
+          <select class="form-control" formControlName="modePayement">
+            <option value="">-- Sélectionnez un mode --</option>
+            <option value="CHEQUE">CHEQUE</option>
+            <option value="VIREMENT">VIREMENT</option>
+            <option value="ESPECES">ESPECES</option>
+            <option value="TPE">TPE</option>
+          </select>
+        </div>        
+
+        <div class="col-md-4 mb-3">
+          <label>Nombre de Chèques</label>
+          <input class="form-control" formControlName="nombreCheque" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Numéro de Chèque</label>
+          <input class="form-control" formControlName="numeroCheque" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Date du Chèque</label>
+          <input type="date" class="form-control" formControlName="dateDuCheque" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Prime Nette</label>
+          <input class="form-control" formControlName="primeNette" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Prime</label>
+          <input class="form-control" formControlName="prime" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label>Commission</label>
+          <input class="form-control" formControlName="commission" />
+        </div>
+
+        <div class="col-12 mb-3">
+          <label>Remarques</label>
+          <textarea class="form-control" formControlName="remarques" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- Transactions -->
+      <div formArrayName="transactions" class="mt-3 bg-light p-3 rounded">
+        <h6>Transactions</h6>
+        <div *ngFor="let transaction of getTransactions(i).controls; let j = index" [formGroupName]="j"
+          class="mb-3 border p-2 bg-white rounded">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label>Date</label>
+              <input type="date" class="form-control" formControlName="date" />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Montant</label>
+              <input class="form-control" formControlName="montant" />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Terme</label>
+              <input class="form-control" formControlName="terme" />
+            </div>
+            <div class="col-md-4 mb-3">
+              <label>Mode de Paiement</label>
+              <select class="form-control" formControlName="modePayement">
+                <option value="">-- Sélectionnez un mode --</option>
+                <option value="CHEQUE">CHEQUE</option>
+                <option value="VIREMENT">VIREMENT</option>
+                <option value="ESPECES">ESPECES</option>
+                <option value="TPE">TPE</option>
+              </select>
+            </div>            
+            <div class="col-md-4 mb-2">
+              <label>NT</label>
+              <input class="form-control" formControlName="nt" />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>BV Banque</label>
+              <input class="form-control" formControlName="bvBanque" />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>BV Portail</label>
+              <input class="form-control" formControlName="bvPortail" />
+            </div>
+            <div class="col-md-8 mb-2">
+              <label>Remarque</label>
+              <input class="form-control" formControlName="remarque" />
+            </div>
+            <div class="col-12 text-end">
+              <button class="btn btn-danger btn-sm" type="button" (click)="removeTransaction(i, j)"
+                *ngIf="getTransactions(i).length > 1">Supprimer Transaction</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" type="button" (click)="addTransaction(i)">+ Ajouter Transaction</button>
+      </div>
+
+      <button class="btn btn-outline-danger mt-3" type="button" (click)="removeContract(i)"
+        *ngIf="contracts.length > 1">
+        Supprimer Contrat
+      </button>
+    </div>
+  </div>
+
+  <button class="btn btn-outline-primary" type="button" (click)="addContract()">+ Ajouter Contrat</button>
+
+  <div class="mt-4 d-flex justify-content-end gap-3">
+    <button type="submit" class="btn btn-success px-5">Enregistrer</button>
+    <button routerLink="/dashboard/contacts" class="btn btn-danger px-5">Annuler</button>
+  </div>
+</form>

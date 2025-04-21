@@ -15,4 +15,5 @@ public interface BanqueService {
     public BanqueDTO updateBanque(Long idBanque, BanqueDTO banqueDTO);
     public void deleteBanqueEntry(Long idTransaction);
     public ResponseEntity<ByteArrayResource> exportBanquesToExcel();
+    public List<BanqueDTO> getTransactionsByProductionId(Long productionId);
 }

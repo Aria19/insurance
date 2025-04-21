@@ -11,6 +11,13 @@ import { ContractListComponent } from './pages/contract-list/contract-list.compo
 import { DashboardLayoutComponent } from './layout/dashboard-layout/dashboard-layout.component';
 import { ModalComponent } from './shared/modal/modal.component';
 import { UpdateContractComponent } from './pages/update-contract/update-contract.component';
+import { ContactListComponent } from './pages/contact-list/contact-list.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ContactFormComponent } from './pages/contact-form/contact-form.component';
+import { RisqueListComponent } from './pages/risque-list/risque-list.component';
+import { UpdateContactComponent } from './pages/update-contact/update-contact.component';
+import { ContactDetailsComponent } from './pages/contact-details/contact-details.component';
+import { ContractFormComponent } from './pages/contract-form/contract-form.component';
 
 @NgModule({
   declarations: [
@@ -20,14 +27,21 @@ import { UpdateContractComponent } from './pages/update-contract/update-contract
     ContractListComponent,
     DashboardLayoutComponent,
     ModalComponent,
-    UpdateContractComponent
+    UpdateContractComponent,
+    ContactListComponent,
+    ContactFormComponent,
+    RisqueListComponent,
+    UpdateContactComponent,
+    ContactDetailsComponent,
+    ContractFormComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxPaginationModule
   ],
   providers: [],
   bootstrap: [AppComponent]

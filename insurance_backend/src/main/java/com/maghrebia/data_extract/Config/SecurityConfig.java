@@ -35,6 +35,7 @@ public class SecurityConfig {
                         // "/users/**"
                         ).permitAll()
                         .requestMatchers("/users/**").hasAnyAuthority("ADMIN", "AGENT")
+                        .requestMatchers("/risques/view").hasAuthority("ADMIN")
                         .requestMatchers("/agents/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 // .formLogin(Customizer.withDefaults()) // Use form-based login instead of

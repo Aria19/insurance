@@ -29,7 +29,10 @@ import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ContactsRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DTO.ContactsDTO;
+import com.maghrebia.data_extract.DTO.CreateBanqueDTO;
 import com.maghrebia.data_extract.DTO.CreateContactDto;
+import com.maghrebia.data_extract.DTO.CreateProductionDTO;
+import com.maghrebia.data_extract.DTO.ProductionDTO;
 import com.maghrebia.data_extract.Mapper.ContactsMapper;
 import com.maghrebia.data_extract.Utils.ContractNumberUtil;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
@@ -121,6 +124,7 @@ public class ContactsServiceImpl implements ContactsService {
                 .searchContacts(assure, msh, societe, codeRisque, numeroContrat)
                 .stream()
                 .map(contact -> new ContactsDTO(
+                        contact.getIdContact(),
                         contact.getAssure(),
                         contact.getSociete(),
                         contact.getTelephone(),
@@ -139,6 +143,12 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public Contacts saveContact(CreateContactDto contactDTO) {
 
+        Optional<Contacts> existing = contactsRepository.findByEmail(contactDTO.getEmail());
+
+        if (existing.isPresent()) {
+            throw new RuntimeException("A contact with this email already exists.");
+        }
+
         Contacts contact = new Contacts();
 
         contact.setAssure(contactDTO.getAssure());
@@ -155,52 +165,53 @@ public class ContactsServiceImpl implements ContactsService {
         // Save contact first to generate an ID
         Contacts savedContact = contactsRepository.save(contact);
 
-        Production contract = new Production();
-        Optional<Risque> risqueOpt = risqueServiceImpl
-                .findBycodeRisque(contactDTO.getContracts().get(0).getCodeRisque());
+        for (CreateProductionDTO contractDto : contactDTO.getContracts()) {
+            Optional<Risque> risqueOpt = risqueServiceImpl.findByidRisque(contractDto.getCodeRisque());
 
-        if (risqueOpt.isPresent()) {
-            Risque risque = risqueOpt.get();
+            if (risqueOpt.isPresent()) {
+                Risque risque = risqueOpt.get();
+                Production contract = new Production();
 
-            contract.setNumeroContrat(generateUniqueContractNumber());
-            contract.setNature(contactDTO.getContracts().get(0).getNature());
-            contract.setRisque(risque);
-            contract.setDateEffet(contactDTO.getContracts().get(0).getDateEffet());
-            contract.setDateEcheance(contactDTO.getContracts().get(0).getDateEcheance());
-            contract.setMois(contactDTO.getContracts().get(0).getMois());
-            contract.setDureeContrat(contactDTO.getContracts().get(0).getDureeContrat());
-            contract.setModePayement(contactDTO.getContracts().get(0).getModePayement());
-            contract.setNombreCheque(contactDTO.getContracts().get(0).getNombreCheque());
-            contract.setNumeroCheque(contactDTO.getContracts().get(0).getNumeroCheque());
-            contract.setDateDuCheque(contactDTO.getContracts().get(0).getDateDuCheque());
-            contract.setPrimeNette(contactDTO.getContracts().get(0).getPrimeNette());
-            contract.setPrime(contactDTO.getContracts().get(0).getPrime());
-            contract.setCommission(contactDTO.getContracts().get(0).getCommission());
-            contract.setRemarques(contactDTO.getContracts().get(0).getRemarques());
-            contract.setContact(savedContact); // Link contract to saved contact
+                contract.setNumeroContrat(generateUniqueContractNumber());
+                contract.setNature(contractDto.getNature());
+                contract.setRisque(risque);
+                contract.setDateEffet(contractDto.getDateEffet());
+                contract.setDateEcheance(contractDto.getDateEcheance());
+                contract.setMois(contractDto.getMois());
+                contract.setDureeContrat(contractDto.getDureeContrat());
+                contract.setModePayement(contractDto.getModePayement());
+                contract.setNombreCheque(contractDto.getNombreCheque());
+                contract.setNumeroCheque(contractDto.getNumeroCheque());
+                contract.setDateDuCheque(contractDto.getDateDuCheque());
+                contract.setPrimeNette(contractDto.getPrimeNette());
+                contract.setPrime(contractDto.getPrime());
+                contract.setCommission(contractDto.getCommission());
+                contract.setRemarques(contractDto.getRemarques());
+                contract.setContact(savedContact);
 
-            productionRepository.save(contract); // Save contract
-        } else {
-            throw new RuntimeException("Risque not found");
+                Production savedContract = productionRepository.save(contract);
+
+                if (contractDto.getTransactions() != null) {
+                    for (CreateBanqueDTO banqueDto : contractDto.getTransactions()) {
+                        Banque banque = new Banque();
+                        banque.setDate(banqueDto.getDate());
+                        banque.setMontant(banqueDto.getMontant());
+                        banque.setTerme(banqueDto.getTerme());
+                        banque.setModePayement(banqueDto.getModePayement());
+                        banque.setNt(banqueDto.getNt());
+                        banque.setBvBanque(banqueDto.getBvBanque());
+                        banque.setBvPortail(banqueDto.getBvPortail());
+                        banque.setRemarque(banqueDto.getRemarque());
+                        banque.setContact(savedContact);
+                        banque.setContract(savedContract);
+
+                        banqueRepository.save(banque);
+                    }
+                }
+            } else {
+                throw new RuntimeException("Risque not found for code: " + contractDto.getCodeRisque());
+            }
         }
-
-        // Convert DTO Banques to Entities (One transaction in this case)
-        Banque banque = new Banque();
-        banque.setDate(contactDTO.getTransactions().get(0).getDate());
-        banque.setMontant(contactDTO.getTransactions().get(0).getMontant());
-        banque.setTerme(contactDTO.getTransactions().get(0).getTerme());
-        banque.setModePayement(contactDTO.getTransactions().get(0).getModePayement());
-        banque.setNt(contactDTO.getTransactions().get(0).getNt());
-        banque.setBvBanque(contactDTO.getTransactions().get(0).getBvBanque());
-        banque.setBvPortail(contactDTO.getTransactions().get(0).getBvPortail());
-        banque.setRemarque(contactDTO.getTransactions().get(0).getRemarque());
-        
-        banque.setContact(savedContact); // Link banque to saved contact
-
-        // Link the Banque to the contract via the contract number (produced above)
-        banque.setContract(contract); // Link to the contract created earlier
-
-        banqueRepository.save(banque); // Save transaction (banque)
 
         return savedContact;
     }
@@ -300,6 +311,15 @@ public class ContactsServiceImpl implements ContactsService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @Override
+    @Transactional
+    public String deleteMultipleContacts(List<Long> ids) {
+        for (Long id : ids) {
+            deleteContact(id);
+        }
+        return "Selected contacts deleted successfully";
     }
 
 }

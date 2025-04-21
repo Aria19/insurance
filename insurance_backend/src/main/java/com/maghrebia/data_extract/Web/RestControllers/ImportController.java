@@ -15,7 +15,7 @@ import com.maghrebia.data_extract.Business.ServicesImpl.ContactsServiceImpl;
 import com.maghrebia.data_extract.Business.ServicesImpl.ProductionServiceImpl;
 
 @RestController
-@RequestMapping("/api/import")
+@RequestMapping("/import")
 public class ImportController {
 
     private final ContactsServiceImpl contactsServiceImpl;

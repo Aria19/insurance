@@ -8,6 +8,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 
 import com.maghrebia.data_extract.DAO.Entities.Production;
+import com.maghrebia.data_extract.DTO.CreateProductionDTO;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
 
 public interface ProductionService {
@@ -26,4 +27,8 @@ public interface ProductionService {
 
     public ResponseEntity<ByteArrayResource> exportProuctionToExcel(String keyword, String risk,
             Integer code, Integer dateEffet);
+
+    public List<ProductionDTO> getProductionsByContactId(Long contactId);
+
+
 }

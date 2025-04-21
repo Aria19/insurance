@@ -20,10 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
 @RestController
-@RequestMapping("/api/contacts")
+@RequestMapping("/contacts")
 public class ContactsController {
 
     private final ContactsService contactsService;
@@ -31,9 +29,9 @@ public class ContactsController {
     public ContactsController(ContactsService contactsService) {
         this.contactsService = contactsService;
     }
-    
+
     @GetMapping("/view")
-    public ResponseEntity<List<ContactsDTO>> getAllContacts(){
+    public ResponseEntity<List<ContactsDTO>> getAllContacts() {
         return ResponseEntity.ok(contactsService.getAllContacts());
     }
 
@@ -44,14 +42,14 @@ public class ContactsController {
             @RequestParam(value = "societe", required = false) String societe,
             @RequestParam(value = "codeRisque", required = false) Integer codeRisque,
             @RequestParam(value = "numeroContrat", required = false) String numeroContrat) {
-        
+
         List<ContactsDTO> contacts = contactsService.searchContacts(assure, msh, societe, codeRisque, numeroContrat);
-        
+
         if (contacts.isEmpty()) {
-            return ResponseEntity.noContent().build();  // No contacts found
+            return ResponseEntity.noContent().build(); // No contacts found
         }
-        
-        return ResponseEntity.ok(contacts);  // Return the list of contacts
+
+        return ResponseEntity.ok(contacts); // Return the list of contacts
     }
 
     @PostMapping("/add")
@@ -65,9 +63,9 @@ public class ContactsController {
         contactsService.updateContact(idContact, contactsDTO);
         return ResponseEntity.ok("Contact updated successfully");
     }
-    
+
     @DeleteMapping("/delete/{idContact}")
-    public ResponseEntity<String> deleteContact(@PathVariable Long idContact){
+    public ResponseEntity<String> deleteContact(@PathVariable Long idContact) {
         try {
             contactsService.deleteContact(idContact);
             return ResponseEntity.ok("Contact with Id: " + idContact + " has been deleted");
@@ -80,5 +78,11 @@ public class ContactsController {
     public ResponseEntity<?> exportContactToExcel() {
         return contactsService.exportContactToExcel();
     }
-    
+
+    @PostMapping("/delete-multiple")
+    public ResponseEntity<String> deleteMultipleContacts(@RequestBody List<Long> ids) {
+        String result = contactsService.deleteMultipleContacts(ids);
+        return ResponseEntity.ok(result);
+    }
+
 }

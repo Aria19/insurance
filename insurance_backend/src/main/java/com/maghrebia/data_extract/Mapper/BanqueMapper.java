@@ -19,5 +19,5 @@ public interface BanqueMapper {
 
     @Mapping(target = "contactName", ignore = true)
     @Mapping(target = "numeroContrat", ignore = true)
-    BanqueDTO toDTO(Banque banque);
+    BanqueDTO toDto(Banque banque);
 }

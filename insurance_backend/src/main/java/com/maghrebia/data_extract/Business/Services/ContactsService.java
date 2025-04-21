@@ -22,5 +22,6 @@ public interface ContactsService {
     public void updateContact(Long idContact, ContactsDTO contactDTO);
     public String deleteContact(Long idContact);
     public ResponseEntity<ByteArrayResource> exportContactToExcel();
+    String deleteMultipleContacts(List<Long> ids);
     
 }

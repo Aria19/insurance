@@ -1,6 +1,7 @@
 package com.maghrebia.data_extract.Business.ServicesImpl;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -44,7 +45,7 @@ public class RisqueServiceImpl implements RisqueService {
                 continue;
             }
 
-            if(codeRisque == null){
+            if (codeRisque == null) {
                 continue;
             } else {
 
@@ -58,6 +59,17 @@ public class RisqueServiceImpl implements RisqueService {
 
     public Optional<Risque> findBycodeRisque(Integer codeRisque) {
         return risqueRepository.findBycodeRisque(codeRisque);
+    }
+
+    public Optional<Risque> findByidRisque(Integer idRisque) {
+        return risqueRepository.findByidRisque(idRisque);
+    }
+
+    public List<RisqueDTO> getAllRisques() {
+        return risqueRepository.findAll()
+                .stream()
+                .map(RisqueDTO::new)
+                .toList();
     }
 
 }

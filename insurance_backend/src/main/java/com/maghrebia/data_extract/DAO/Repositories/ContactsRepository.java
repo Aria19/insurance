@@ -51,4 +51,6 @@ public interface ContactsRepository extends JpaRepository<Contacts, Long> {
         Optional<Contacts> findByAssure(String assure);
 
         Optional<Contacts> findBySociete(String societe);
+
+        Optional<Contacts> findByEmail(String email);
 }

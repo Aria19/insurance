@@ -32,8 +32,9 @@ import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ContactsRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DAO.Repositories.RisqueRepository;
-import com.maghrebia.data_extract.DTO.ProdDTO;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
+import com.maghrebia.data_extract.Mapper.CreateBanqueMapper;
+import com.maghrebia.data_extract.Mapper.CreateProductionMapper;
 import com.maghrebia.data_extract.Mapper.ProductionMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
@@ -49,21 +50,25 @@ public class ProductionServiceImpl implements ProductionService {
     final RisqueRepository risqueRepository;
     final BanqueRepository banqueRepository;
     final ProductionMapper productionMapper;
+    final CreateProductionMapper createProductionMapper;
+    final CreateBanqueMapper createBanqueMapper;
     final ContactsServiceImpl contactsServiceImpl;
     final RisqueServiceImpl risqueServiceImpl;
     private final Logger logger = LoggerFactory.getLogger(ProductionServiceImpl.class);
 
-    /* public ProductionServiceImpl(ProductionRepository productionRepository,
-            BanqueRepository banqueRepository,
-            ProductionMapper productionMapper,
-            ContactsServiceImpl contactsServiceImpl,
-            RisqueServiceImpl risqueServiceImpl) {
-        this.productionRepository = productionRepository;
-        this.banqueRepository = banqueRepository;
-        this.productionMapper = productionMapper;
-        this.contactsServiceImpl = contactsServiceImpl;
-        this.risqueServiceImpl = risqueServiceImpl;
-    } */
+    /*
+     * public ProductionServiceImpl(ProductionRepository productionRepository,
+     * BanqueRepository banqueRepository,
+     * ProductionMapper productionMapper,
+     * ContactsServiceImpl contactsServiceImpl,
+     * RisqueServiceImpl risqueServiceImpl) {
+     * this.productionRepository = productionRepository;
+     * this.banqueRepository = banqueRepository;
+     * this.productionMapper = productionMapper;
+     * this.contactsServiceImpl = contactsServiceImpl;
+     * this.risqueServiceImpl = risqueServiceImpl;
+     * }
+     */
 
     @Override
     public void importProduction(Sheet sheet) {
@@ -186,8 +191,6 @@ public class ProductionServiceImpl implements ProductionService {
     @Override
     public List<ProductionDTO> searchContracts(String keyword, String risk, Integer code, Integer dateEffet) {
         List<ProductionDTO> contracts = new ArrayList<>();
-
-        // Fetch CarInsurance entities, map to CarInsuranceDTO
         List<ProductionDTO> productionDTOs = productionRepository
                 .searchContracts(keyword, risk, code, dateEffet)
                 .stream()
@@ -239,8 +242,8 @@ public class ProductionServiceImpl implements ProductionService {
 
     public void updateProduction(Long id, ProductionDTO dto) {
         Production production = productionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Production not found"));
-    
+                .orElseThrow(() -> new RuntimeException("Production not found"));
+
         // Update production fields
         production.setNumeroContrat(dto.getNumeroContrat());
         production.setNature(dto.getNature());
@@ -256,28 +259,27 @@ public class ProductionServiceImpl implements ProductionService {
         production.setPrime(dto.getPrime());
         production.setCommission(dto.getCommission());
         production.setRemarques(dto.getRemarques());
-    
+
         // Fetch and update related entities (if needed)
         if (dto.getCodeRisque() != null) {
             Risque risque = risqueRepository.findBycodeRisque(dto.getCodeRisque())
-                .orElseThrow(() -> new RuntimeException("Risque not found"));
+                    .orElseThrow(() -> new RuntimeException("Risque not found"));
             production.setRisque(risque);
         }
-    
+
         if (dto.getContactName() != null) {
             Contacts contact = contactRepository.findByAssure(dto.getContactName())
-                .orElseThrow(() -> new RuntimeException("Contact not found"));
+                    .orElseThrow(() -> new RuntimeException("Contact not found"));
             production.setContact(contact);
         }
-    
+
         productionRepository.save(production);
     }
-    
 
     @Override
     public ResponseEntity<ByteArrayResource> exportProuctionToExcel(String keyword,
             String risk, Integer code, Integer dateEffet) {
-        //List<Production> contracts = productionRepository.findAll();
+        // List<Production> contracts = productionRepository.findAll();
         List<ProductionDTO> contracts = searchContracts(keyword, risk, code, dateEffet);
 
         try (Workbook workbook = new XSSFWorkbook();
@@ -354,6 +356,14 @@ public class ProductionServiceImpl implements ProductionService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @Override
+    public List<ProductionDTO> getProductionsByContactId(Long contactId) {
+        List<Production> productions = productionRepository.findByContact_IdContact(contactId);
+        return productions.stream()
+                .map(productionMapper::toDto)
+                .toList();
     }
 
 }

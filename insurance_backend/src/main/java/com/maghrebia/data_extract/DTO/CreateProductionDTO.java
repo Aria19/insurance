@@ -1,6 +1,7 @@
 package com.maghrebia.data_extract.DTO;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +26,7 @@ public class CreateProductionDTO {
     private float prime;		
     private float commission;
     private String remarques;
+
+    private List<CreateBanqueDTO> transactions;
+
 }

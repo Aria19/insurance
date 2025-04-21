@@ -23,5 +23,5 @@ public class CreateContactDto {
     private String matriculeFiscale;
 
     private List<CreateProductionDTO> contracts;
-    private List<CreateBanqueDTO> transactions;
+    
 }

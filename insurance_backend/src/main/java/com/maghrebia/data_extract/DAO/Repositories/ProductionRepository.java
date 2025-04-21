@@ -36,4 +36,7 @@ public interface ProductionRepository extends JpaRepository<Production, Long> {
         @Modifying
         @Query("DELETE FROM Production p WHERE p.contact.idContact = :idContact")
         void deleteByContactId(@Param("idContact") Long idContact);
+
+        List<Production> findByContact_IdContact(Long idContact);
+
 }

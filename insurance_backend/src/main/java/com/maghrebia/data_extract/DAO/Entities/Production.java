@@ -57,7 +57,6 @@ public class Production {
     private float prime;
     private float commission;
     private String remarques;
-    // private String assuré;
 
     @ManyToOne
     @JoinColumn(name = "id_contact", referencedColumnName = "idContact", nullable = false)

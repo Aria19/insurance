@@ -2,29 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, EMPTY } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { BaseService } from '../../baseService/base.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ContractService {
-  private baseUrl = 'http://localhost:8080/productions';
+export class ContractService extends BaseService {
 
-  constructor(private http: HttpClient) {}
-
-  private getAuthHeaders(): HttpHeaders | null {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('No token found, authentication required!');
-      return null;
-    }
-    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  constructor(private http: HttpClient) {
+    super();
   }
 
   getContracts(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    if (!headers) return EMPTY; // Return an empty observable if no token
 
-    return this.http.get<any[]>(`${this.baseUrl}/view`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.baseApiUrl}/productions/view`, { headers }).pipe(
       catchError(err => {
         console.error('Error fetching contracts:', err);
         return EMPTY;
@@ -38,7 +30,6 @@ export class ContractService {
     dateEffet?: number
   ): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    if (!headers) return EMPTY;
   
     let params = new HttpParams();
     if (keyword) params = params.set('keyword', keyword);
@@ -48,12 +39,11 @@ export class ContractService {
     if (dateEffet !== null && dateEffet !== undefined)
       params = params.set('dateEffet', dateEffet.toString());
   
-    return this.http.get<any[]>(`${this.baseUrl}/search`, { headers, params });
+    return this.http.get<any[]>(`${this.baseApiUrl}/productions/search`, { headers, params });
   }
   
   exportContracts(keyword?: string, risk?: string, code?: number, dateEffet?: number): Observable<Blob> {
     const headers = this.getAuthHeaders();
-    if (!headers) return EMPTY;
 
     let params = new HttpParams();
     if (keyword) params = params.set('keyword', keyword);
@@ -61,7 +51,7 @@ export class ContractService {
     if (code) params = params.set('code', code.toString());
     if (dateEffet) params = params.set('dateEffet', dateEffet.toString());
   
-    return this.http.get(`${this.baseUrl}/export`, { 
+    return this.http.get(`${this.baseApiUrl}/productions/export`, { 
       params, 
       responseType: 'blob',
       headers: headers
@@ -70,17 +60,25 @@ export class ContractService {
 
   deleteContract(id: number): Observable<void> {
     const headers = this.getAuthHeaders();
-    if (!headers) return EMPTY; 
 
-    return this.http.delete<void>(`${this.baseUrl}/delete/${id}`, { headers });
+    return this.http.delete<void>(`${this.baseApiUrl}/productions/delete/${id}`, { headers });
   }
 
   updateContract(contractId: number, contractData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    if (!headers) return EMPTY; 
     
-    return this.http.put(`${this.baseUrl}/update/${contractId}`, contractData, { headers });
+    return this.http.put(`${this.baseApiUrl}/productions/update/${contractId}`, contractData, { headers });
   }
   
+  getContractsByContactId(contactId: number): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    
+    return this.http.get<any[]>(`${this.baseApiUrl}/productions/contact/${contactId}`, { headers }).pipe(
+      catchError(err => {
+        console.error('Error fetching contracts by contact ID:', err);
+        return EMPTY;
+      })
+    );
+  }
   
 }

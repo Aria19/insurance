@@ -1,0 +1,77 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <div class="container mt-4">
+                <h2>Contacts List</h2>
+
+                <div class="d-flex justify-content-end">
+                    <button routerLink="/dashboard/contacts/add" class="btn btn-success mt-3 mb-3"> Add new Contact
+                    </button>
+                </div>
+
+                <!-- Contacts Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>
+                                    <input type="checkbox" (change)="toggleAllSelection($event)">
+                                </th>
+                                <th>Assure</th>
+                                <th>Société</th>
+                                <th>Telephone</th>
+                                <th>Email</th>
+                                <th>MSH</th>
+                                <th>Mot de passe</th>
+                                <th>CIN</th>
+                                <th>Carte Séjour</th>
+                                <th>Passeport</th>
+                                <th>Matricule Fiscale</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let contact of contacts | paginate: { itemsPerPage: 10, currentPage: page }"
+                                (click)="goToContactDetails(contact.idContact)" style="cursor: pointer;">
+                                <td>
+                                    <input type="checkbox" [(ngModel)]="contact.selected" (click)="$event.stopPropagation()">
+                                </td>
+                                <td>{{ contact.assure }}</td>
+                                <td>{{ contact.societe }}</td>
+                                <td>{{ contact.telephone }}</td>
+                                <td>{{ contact.email }}</td>
+                                <td>{{ contact.msh }}</td>
+                                <td>{{ contact.motDePasse }}</td>
+                                <td>{{ contact.cin }}</td>
+                                <td>{{ contact.carteSejour }}</td>
+                                <td>{{ contact.passeport }}</td>
+                                <td>{{ contact.matriculeFiscale }}</td>
+                                <td>
+                                    <i class="bi bi-pencil-fill text-success" style="cursor: pointer;"
+                                        [routerLink]="['/dashboard/contacts/update-contact', contact.idContact]"
+                                        (click)="$event.stopPropagation()"></i>
+
+                                    <i class="bi bi-trash-fill text-danger mx-2" style="cursor: pointer;"
+                                        (click)="deleteContact(contact.idContact); $event.stopPropagation()"></i>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-end">
+                        <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""
+                            class="pagination-sm">
+                        </pagination-controls>
+                    </div>
+                </div>
+
+                <!-- Bulk Delete Button -->
+                <div class="d-flex justify-content-end mt-2">
+                    <button class="btn btn-danger" (click)="deleteSelectedContacts()">Delete Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

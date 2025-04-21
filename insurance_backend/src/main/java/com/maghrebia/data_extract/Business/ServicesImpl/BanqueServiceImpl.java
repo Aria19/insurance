@@ -28,6 +28,8 @@ import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
 import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DTO.BanqueDTO;
+import com.maghrebia.data_extract.Mapper.BanqueMapper;
+import com.maghrebia.data_extract.Mapper.CreateBanqueMapper;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
 
@@ -41,15 +43,21 @@ public class BanqueServiceImpl implements BanqueService {
     private final ProductionServiceImpl productionServiceImpl;
     private final RisqueServiceImpl risqueServiceImpl;
     private final Logger logger = LoggerFactory.getLogger(BanqueServiceImpl.class);
+    private final CreateBanqueMapper createBanqueMapper;
+    private final BanqueMapper banqueMapper;
 
     public BanqueServiceImpl(BanqueRepository banqueRepository,
             ContactsServiceImpl contactsServiceImpl,
             ProductionServiceImpl productionServiceImpl,
-            RisqueServiceImpl risqueServiceImpl) {
+            RisqueServiceImpl risqueServiceImpl,
+            CreateBanqueMapper createBanqueMapper, 
+            BanqueMapper banqueMapper) {
         this.banqueRepository = banqueRepository;
         this.contactsServiceImpl = contactsServiceImpl;
         this.productionServiceImpl = productionServiceImpl;
         this.risqueServiceImpl = risqueServiceImpl;
+        this.createBanqueMapper = createBanqueMapper;
+        this.banqueMapper = banqueMapper;
     }
 
     @Override
@@ -242,4 +250,11 @@ public class BanqueServiceImpl implements BanqueService {
         }
     }
 
+    @Override
+    public List<BanqueDTO> getTransactionsByProductionId(Long productionId) {
+        List<Banque> transactions = banqueRepository.findByContract_IdProduction(productionId);
+        return transactions.stream()
+                .map(banqueMapper::toDto)
+                .toList();
+    }
 }

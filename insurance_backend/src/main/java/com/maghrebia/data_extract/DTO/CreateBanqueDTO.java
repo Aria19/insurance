@@ -20,4 +20,5 @@ public class CreateBanqueDTO {
     private String bvBanque;	
     private String bvPortail;	
     private String remarque;
+
 }

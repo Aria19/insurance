@@ -16,6 +16,7 @@ export class ContractListComponent implements OnInit {
   dateEffet: number | undefined = undefined;
 
   contracts: any[] = [];
+  page: number = 1;
   
   role: string | null = '';
 

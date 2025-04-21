@@ -1,6 +1,7 @@
 package com.maghrebia.data_extract.DTO;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ProductionDTO {
 
-    private Long id;
+    private Long idProduction;
     private String numeroContrat;
     private String contactName;
     private String nature;	

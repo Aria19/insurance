@@ -1,5 +1,7 @@
 package com.maghrebia.data_extract.DAO.Repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,6 @@ public interface BanqueRepository extends JpaRepository<Banque, Long> {
         @Modifying
         @Query("DELETE FROM Banque b WHERE b.contact.idContact = :idContact")
         void deleteByContactId(@Param("idContact") Long idContact);
+
+    List<Banque> findByContract_IdProduction(Long idProduction);
 }

@@ -1,0 +1,26 @@
+<div class="container mt-4">
+    <h2>Liste des Risques</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Code Risque</th>
+                <th>Nom du Risque</th>
+                <th>Commission</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let risque of risques">
+                <td>{{ risque.idRisque }}</td>
+                <td>{{ risque.codeRisque }}</td>
+                <td>{{ risque.risqueName }}</td>
+                <td>{{ risque.commission }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="risques.length === 0" class="alert alert-info">
+        Aucun risque disponible.
+    </div>
+</div>

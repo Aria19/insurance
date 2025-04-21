@@ -1,6 +1,5 @@
 package com.maghrebia.data_extract.Web.RestControllers;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maghrebia.data_extract.Business.Services.ProductionService;
+import com.maghrebia.data_extract.DTO.CreateProductionDTO;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -74,6 +75,12 @@ public class ProductionController {
             @RequestParam(required = false) Integer code,
             @RequestParam(required = false) Integer dateEffet) {
         return productionService.exportProuctionToExcel(keyword, risk, code, dateEffet);
+    }
+
+    @GetMapping("/contact/{contactId}")
+    public ResponseEntity<List<ProductionDTO>> getProductionsByContactId(@PathVariable Long contactId) {
+        List<ProductionDTO> productions = productionService.getProductionsByContactId(contactId);
+        return ResponseEntity.ok(productions);
     }
 
 }
