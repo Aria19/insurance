@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ContractListComponent } from './pages/contract-list/contract-list.component';
 import { DashboardLayoutComponent } from './layout/dashboard-layout/dashboard-layout.component';
 import { ModalComponent } from './shared/modal/modal.component';
@@ -18,6 +18,8 @@ import { RisqueListComponent } from './pages/risque-list/risque-list.component';
 import { UpdateContactComponent } from './pages/update-contact/update-contact.component';
 import { ContactDetailsComponent } from './pages/contact-details/contact-details.component';
 import { ContractFormComponent } from './pages/contract-form/contract-form.component';
+import { UserListComponent } from './pages/user-list/user-list.component';
+import { AuthInterceptorService } from './interceptors/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import { ContractFormComponent } from './pages/contract-form/contract-form.compo
     RisqueListComponent,
     UpdateContactComponent,
     ContactDetailsComponent,
-    ContractFormComponent
+    ContractFormComponent,
+    UserListComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +46,9 @@ import { ContractFormComponent } from './pages/contract-form/contract-form.compo
     ReactiveFormsModule,
     NgxPaginationModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

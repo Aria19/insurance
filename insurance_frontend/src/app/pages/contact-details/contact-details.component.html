@@ -1,10 +1,10 @@
 <div class="container">
-    <button class="btn btn-secondary mb-3" (click)="goBack()">← Back</button>
+    <button class="btn btn-secondary mb-3" (click)="goBack()">← Annuler</button>
 
     <div *ngIf="productionsWithTransactions.length > 0; else noContracts">
         <div *ngFor="let item of productionsWithTransactions" class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
-                Contract Number: {{ item.production.numeroContrat }}
+                Numéro de contrat: {{ item.production.numeroContrat }}
             </div>
             <div class="card-body">
                 <form>
@@ -103,7 +103,7 @@
     </ng-template>
     
     <div class="d-flex justify-content-end">
-        <button routerLink="/dashboard/contracts/add" class="btn btn-success mt-3 mb-3"> Add new Contract
+        <button [routerLink]="['/dashboard/contracts/add/', contactId]" class="btn btn-success mt-3 mb-3"> Ajouter Contract
         </button>
     </div>
 </div>

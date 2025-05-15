@@ -34,11 +34,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String role;  // "ADMIN" or "AGENT"
 
-    public User(String username, String email, String password, String role) {
+    private String image;
+
+    public User(String username, String email, String password, String role, String image) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.image = image;
     }
 
     @Override

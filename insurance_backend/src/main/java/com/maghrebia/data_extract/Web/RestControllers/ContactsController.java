@@ -65,12 +65,12 @@ public class ContactsController {
     }
 
     @DeleteMapping("/delete/{idContact}")
-    public ResponseEntity<String> deleteContact(@PathVariable Long idContact) {
+    public ResponseEntity<Void> deleteContact(@PathVariable Long idContact) {
         try {
             contactsService.deleteContact(idContact);
-            return ResponseEntity.ok("Contact with Id: " + idContact + " has been deleted");
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

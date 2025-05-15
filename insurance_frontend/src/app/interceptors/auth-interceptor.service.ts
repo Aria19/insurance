@@ -7,6 +7,8 @@ import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http'
 export class AuthInterceptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     const token = localStorage.getItem('token');
+    console.log('Interceptor activated. Token:', token); 
+    
     if (token) {
       const clonedReq = req.clone({
         setHeaders: {

@@ -6,8 +6,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,17 +21,18 @@ import com.maghrebia.data_extract.Business.ServicesImpl.RisqueServiceImpl;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
 import com.maghrebia.data_extract.DTO.RisqueDTO;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/risques")
 public class RisqueController {
 
     private final RisqueService risqueService;
 
-
     public RisqueController(RisqueServiceImpl risqueService) {
         this.risqueService = risqueService;
     }
-
 
     @PostMapping(value = "/import", consumes = "multipart/form-data")
     public ResponseEntity<String> importDataFromExcel(@RequestParam("file") MultipartFile file) {
@@ -61,5 +65,22 @@ public class RisqueController {
     @GetMapping("/view")
     public List<RisqueDTO> getAllRisques() {
         return risqueService.getAllRisques();
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> addRisque(@RequestBody @Valid RisqueDTO risqueDTO) {
+        risqueService.addRisque(risqueDTO);
+        return ResponseEntity.ok("Risque added successfully");
+    }
+
+    @GetMapping("/view/{risqueId}")
+    public RisqueDTO getRisqueById(@PathVariable Long risqueId) {
+        return risqueService.getRisqueByID(risqueId);
+    }
+
+    @DeleteMapping("/{risqueId}")
+    public ResponseEntity<Void> deleteRisque(@PathVariable Long risqueId) {
+        risqueService.deleteRisk(risqueId);
+        return ResponseEntity.ok().build();
     }
 }

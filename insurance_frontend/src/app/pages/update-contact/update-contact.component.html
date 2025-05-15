@@ -1,61 +1,72 @@
 <form (ngSubmit)="updateContact()" #contactForm="ngForm" class="container">
-    <h2 class="text-center mb-4">Update Contact</h2>
-  
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input id="email" type="email" class="form-control" [(ngModel)]="contact.email" name="email" required />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Téléphone</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.telephone" name="telephone" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Mot de passe</label>
-        <input type="password" class="form-control" [(ngModel)]="contact.motDePasse" name="motDePasse" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Assuré</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.assure" name="assure" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Société</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.societe" name="societe" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>MSH</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.msh" name="msh" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>CIN</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.cin" name="cin" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Carte Séjour</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.carteSejour" name="carteSejour" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Passeport</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.passeport" name="passeport" />
-      </div>
-  
-      <div class="col-md-6 mb-3">
-        <label>Matricule Fiscale</label>
-        <input type="text" class="form-control" [(ngModel)]="contact.matriculeFiscale" name="matriculeFiscale" />
+
+  <div *ngIf="toastMessage" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055">
+    <div class="toast align-items-center text-white bg-{{ toastType }} border-0 show">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ toastMessage }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastMessage = ''"></button>
       </div>
     </div>
+  </div>
   
-    <div class="mt-4 d-flex justify-content-end gap-3">
-      <button type="submit" class="btn btn-success px-5">Enregistrer</button>
-      <button routerLink="/dashboard/contacts" class="btn btn-danger px-5">Annuler</button>
+  <h2 class="text-center mb-4">Modifier Contact</h2>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input id="email" type="email" class="form-control" [(ngModel)]="contact.email" name="email" required />
     </div>
-  </form>
-  
+
+    <div class="col-md-6 mb-3">
+      <label>Téléphone</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.telephone" name="telephone" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Mot de passe</label>
+      <input type="password" class="form-control" [(ngModel)]="contact.motDePasse" name="motDePasse" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Assuré</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.assure" name="assure" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Société</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.societe" name="societe" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>MSH</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.msh" name="msh" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>CIN</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.cin" name="cin" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Carte Séjour</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.carteSejour" name="carteSejour" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Passeport</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.passeport" name="passeport" />
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <label>Matricule Fiscale</label>
+      <input type="text" class="form-control" [(ngModel)]="contact.matriculeFiscale" name="matriculeFiscale" />
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-end gap-3">
+    <button type="submit" class="btn btn-success px-5">Enregistrer</button>
+    <button routerLink="/dashboard/contacts" class="btn btn-danger px-5">Annuler</button>
+  </div>
+</form>

@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { ContractService } from 'src/app/services/apiServices/contractService/contract.service';
 import { ModalComponent } from 'src/app/shared/modal/modal.component';
+//import { ModalComponent } from 'src/app/shared/modal/modal.component';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-contract-list',
@@ -15,10 +16,16 @@ export class ContractListComponent implements OnInit {
   codeRisque: number | undefined = undefined;
   dateEffet: number | undefined = undefined;
 
+  @ViewChild(ModalComponent) deleteModal!: ModalComponent;
+
+  private contractIdToDelete: number | null = null;
   contracts: any[] = [];
   page: number = 1;
-  
+
   role: string | null = '';
+
+  toastMessage = '';
+  toastType = 'success';
 
   constructor(private contractService: ContractService) { }
 
@@ -92,18 +99,38 @@ export class ContractListComponent implements OnInit {
       });
   }
 
-  deleteContract(contractId: number) {
-    if (confirm('Are you sure you want to delete this contract?')) {
-      this.contractService.deleteContract(contractId).subscribe({
+  // Called when user clicks the delete icon/button
+  openDeleteModal(contractId: number): void {
+    this.contractIdToDelete = contractId;
+    this.deleteModal.open();
+  }
+
+  confirmDelete(): void {
+    if (this.contractIdToDelete !== null) {
+      this.contractService.deleteContract(this.contractIdToDelete).subscribe({
         next: () => {
-          alert('Contract deleted successfully!');
+          this.getAllContracts();
+          this.showToast('Contrat supprimé avec succès.', 'success');
         },
         error: (err) => {
           console.error('Error deleting contract:', err);
+          this.showToast("Erreur lors de la suppression.", 'danger');
         }
       });
-      window.location.reload();
     }
+  }
+
+  getAllContracts() {
+    this.contractService.getContracts().subscribe({
+      next: data => this.contracts = data,
+      error: err => console.error(err)
+    });
+  }
+
+  showToast(message: string, type: 'success' | 'danger') {
+    this.toastMessage = message;
+    this.toastType = type;
+    setTimeout(() => this.toastMessage = '', 5000);
   }
 
 }

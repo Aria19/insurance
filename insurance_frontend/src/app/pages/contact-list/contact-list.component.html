@@ -2,11 +2,41 @@
     <div class="card">
         <div class="card-body">
             <div class="container mt-4">
-                <h2>Contacts List</h2>
 
-                <div class="d-flex justify-content-end">
-                    <button routerLink="/dashboard/contacts/add" class="btn btn-success mt-3 mb-3"> Add new Contact
+                <div *ngIf="toastMessage" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055">
+                    <div class="toast align-items-center text-white bg-{{ toastType }} border-0 show">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                {{ toastMessage }}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                                (click)="toastMessage = ''"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Liste de contacts</h2>
+
+                <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                    <div class="d-flex gap-2">
+                        <input type="file" (change)="onFileSelected($event)" accept=".xls,.xlsx"
+                            class="form-control form-control-sm" style="max-width: 220px;">
+                        <button class="btn btn-success btn-sm" (click)="importExcel()" [disabled]="!selectedFile">
+                            Importer
+                        </button>
+                    </div>
+                    <button routerLink="/dashboard/contacts/add" class="btn btn-success btn-sm">
+                        Ajouter contat
                     </button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <input type="text" class="form-control" placeholder="Assuré" (input)="onAssureInput($event)">
+                    <input type="text" class="form-control" placeholder="MSH" (input)="onMshInput($event)">
+                    <input type="text" class="form-control" placeholder="Société" (input)="onSocieteInput($event)">
+                    <input type="number" class="form-control" placeholder="Code Risque"
+                        (input)="onCodeRisqueChange($event)">
+                    <input type="text" class="form-control" placeholder="N° Contrat"
+                        (input)="onNumeroContratInput($event)">
                 </div>
 
                 <!-- Contacts Table -->
@@ -34,7 +64,8 @@
                             <tr *ngFor="let contact of contacts | paginate: { itemsPerPage: 10, currentPage: page }"
                                 (click)="goToContactDetails(contact.idContact)" style="cursor: pointer;">
                                 <td>
-                                    <input type="checkbox" [(ngModel)]="contact.selected" (click)="$event.stopPropagation()">
+                                    <input type="checkbox" [(ngModel)]="contact.selected"
+                                        (click)="$event.stopPropagation()">
                                 </td>
                                 <td>{{ contact.assure }}</td>
                                 <td>{{ contact.societe }}</td>
@@ -52,7 +83,7 @@
                                         (click)="$event.stopPropagation()"></i>
 
                                     <i class="bi bi-trash-fill text-danger mx-2" style="cursor: pointer;"
-                                        (click)="deleteContact(contact.idContact); $event.stopPropagation()"></i>
+                                        (click)="openDeleteModal(contact.idContact); $event.stopPropagation()"></i>
 
                                 </td>
                             </tr>
@@ -67,10 +98,16 @@
                     </div>
                 </div>
 
+                <!-- Delete Confirmation Modal -->
+                <app-modal [title]="'Êtes-vous sûr ?'"
+                    [message]="'Cette action supprimera définitivement le contat et ses données du serveur.'"
+                    (confirm)="onModalConfirm()"></app-modal>
+
                 <!-- Bulk Delete Button -->
                 <div class="d-flex justify-content-end mt-2">
-                    <button class="btn btn-danger" (click)="deleteSelectedContacts()">Delete Selected</button>
+                    <button class="btn btn-danger" (click)="openBulkDeleteModal()">Supprimer sélection</button>
                 </div>
+                <button class="btn btn-success" (click)="exportContacts()">Exporter</button>
             </div>
         </div>
     </div>

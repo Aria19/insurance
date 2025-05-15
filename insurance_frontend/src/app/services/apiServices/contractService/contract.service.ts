@@ -2,21 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, EMPTY } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { BaseService } from '../../baseService/base.service';
+import { CreateProductionDTO } from 'src/app/models/create-production.dto';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ContractService extends BaseService {
+export class ContractService {
 
   constructor(private http: HttpClient) {
-    super();
   }
 
   getContracts(): Observable<any[]> {
-    const headers = this.getAuthHeaders();
 
-    return this.http.get<any[]>(`${this.baseApiUrl}/productions/view`, { headers }).pipe(
+    return this.http.get<any[]>(`${environment.apiUrl}/productions/view`).pipe(
       catchError(err => {
         console.error('Error fetching contracts:', err);
         return EMPTY;
@@ -29,7 +28,6 @@ export class ContractService extends BaseService {
     codeRisque?: number,
     dateEffet?: number
   ): Observable<any[]> {
-    const headers = this.getAuthHeaders();
   
     let params = new HttpParams();
     if (keyword) params = params.set('keyword', keyword);
@@ -39,11 +37,10 @@ export class ContractService extends BaseService {
     if (dateEffet !== null && dateEffet !== undefined)
       params = params.set('dateEffet', dateEffet.toString());
   
-    return this.http.get<any[]>(`${this.baseApiUrl}/productions/search`, { headers, params });
+    return this.http.get<any[]>(`${environment.apiUrl}/productions/search`, { params });
   }
   
   exportContracts(keyword?: string, risk?: string, code?: number, dateEffet?: number): Observable<Blob> {
-    const headers = this.getAuthHeaders();
 
     let params = new HttpParams();
     if (keyword) params = params.set('keyword', keyword);
@@ -51,29 +48,25 @@ export class ContractService extends BaseService {
     if (code) params = params.set('code', code.toString());
     if (dateEffet) params = params.set('dateEffet', dateEffet.toString());
   
-    return this.http.get(`${this.baseApiUrl}/productions/export`, { 
+    return this.http.get(`${environment.apiUrl}/productions/export`, { 
       params, 
-      responseType: 'blob',
-      headers: headers
+      responseType: 'blob'
     });
   }
 
-  deleteContract(id: number): Observable<void> {
-    const headers = this.getAuthHeaders();
-
-    return this.http.delete<void>(`${this.baseApiUrl}/productions/delete/${id}`, { headers });
+  deleteContract(contractId: number): Observable<void> {
+  
+    return this.http.delete<void>(`${environment.apiUrl}/productions/delete/${contractId}`);
   }
 
   updateContract(contractId: number, contractData: any): Observable<any> {
-    const headers = this.getAuthHeaders();
     
-    return this.http.put(`${this.baseApiUrl}/productions/update/${contractId}`, contractData, { headers });
+    return this.http.put(`${environment.apiUrl}/productions/update/${contractId}`, contractData);
   }
   
   getContractsByContactId(contactId: number): Observable<any[]> {
-    const headers = this.getAuthHeaders();
     
-    return this.http.get<any[]>(`${this.baseApiUrl}/productions/contact/${contactId}`, { headers }).pipe(
+    return this.http.get<any[]>(`${environment.apiUrl}/productions/contact/${contactId}`).pipe(
       catchError(err => {
         console.error('Error fetching contracts by contact ID:', err);
         return EMPTY;
@@ -81,4 +74,8 @@ export class ContractService extends BaseService {
     );
   }
   
+  addContractToContact(idContact: number, contractDto: CreateProductionDTO): Observable<void> {
+
+    return this.http.post<void>(`${environment.apiUrl}/productions/add/${idContact}`, contractDto);
+  }
 }

@@ -30,5 +30,6 @@ public interface ProductionService {
 
     public List<ProductionDTO> getProductionsByContactId(Long contactId);
 
+    public void saveContractWithTransaction(Long idContact, CreateProductionDTO contractDTO);
 
 }

@@ -20,7 +20,7 @@ public class AdminInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.findByRole("ADMIN").isEmpty()) {
-            User admin = new User("Tmim Ben Sabbeh", "tmim.bensabbeh@maghrebia.com.tn", passwordEncoder.encode("admin123"), "ADMIN");
+            User admin = new User("Tmim Ben Sabbeh", "tmim.bensabbeh@maghrebia.com.tn", passwordEncoder.encode("admin123"), "ADMIN", "/images/user-profile-icon.jpg");
             userRepository.save(admin);
             System.out.println("Admin created successfully.");
         }

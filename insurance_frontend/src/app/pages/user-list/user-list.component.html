@@ -1,0 +1,117 @@
+<!-- Updated HTML for Viewing and Editing Users -->
+<div *ngIf="toastMessage" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055">
+  <div class="toast align-items-center text-white bg-{{ toastType }} border-0 show">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{ toastMessage }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastMessage = ''"></button>
+    </div>
+  </div>
+</div>
+
+<button class="btn btn-primary mb-3" (click)="toggleAddForm()">
+  Ajouter Utilisateur
+</button>
+
+<div *ngIf="showAddForm" class="card p-3 mb-3">
+  <form (ngSubmit)="submitAddUser()">
+    <div class="mb-2">
+      <input type="text" class="form-control" placeholder="Username" [(ngModel)]="newUser.username" name="username"
+        required />
+    </div>
+    <div class="mb-2">
+      <input type="email" class="form-control" placeholder="Email" [(ngModel)]="newUser.email" name="email" required />
+    </div>
+    <div class="mb-2 position-relative">
+      <input [type]="showPassword ? 'text' : 'password'" class="form-control" placeholder="Password"
+        [(ngModel)]="newUser.password" name="password" required />
+
+      <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'" (click)="togglePasswordVisibility()"
+        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); cursor: pointer;">
+      </i>
+    </div>
+    <div class="mb-2">
+      <select class="form-control" [(ngModel)]="newUser.role" name="role" required>
+        <option value="" disabled selected>Choisir un rôle</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="AGENT">AGENT</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+    <button type="button" class="btn btn-secondary ms-2" (click)="toggleAddForm()">Annuler</button>
+  </form>
+</div>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap justify-content-center gap-4">
+    <ng-container *ngFor="let user of users; let i = index">
+      <div *ngIf="i > 0" class="col-md-3 mb-4 d-flex justify-content-center">
+        <div class="card text-center" style="width: 60rem; border-radius: 1rem;">
+          <div class="position-relative">
+            <img [src]="'http://localhost:8080' + user.image" class="img-fluid rounded-circle mt-3" alt="User Image"
+              style="width: 200px; height: 200px; object-fit: cover;">
+
+            <i class="bi bi-trash-fill text-danger fs-4 position-absolute top-0 end-0 m-2" style="cursor: pointer;"
+              (click)="openDeleteModal(user.id)"></i>
+
+            <app-modal [title]="'Êtes-vous sûr ?'"
+              [message]="'Cette action supprimera définitivement l\'utilisateur et ses données du serveur.'"
+              (confirm)="deleteUser()"></app-modal>
+
+            <input type="file" #fileInput (change)="onImageSelected($event, user.id)" accept="image/*"
+              style="display: none;">
+
+            <button class="btn btn-light btn-sm" (click)="fileInput.click()"
+              style="position: absolute; top: 140px; right: 50px; transform: translateX(50%); color: black; border: 1px solid #ccc; z-index: 1; border-radius: 0.5rem;">
+              <i class="bi bi-pencil-fill"></i> Edit
+            </button>
+          </div>
+
+          <div class="card-body">
+            <input class="form-control form-control-sm mb-2" [(ngModel)]="user.username"
+              name="username-{{ user.id }}" />
+            <input class="form-control form-control-sm mb-2" [(ngModel)]="user.email" name="email-{{ user.id }}" />
+            <select class="form-control form-control-sm mb-2" [(ngModel)]="user.role" name="role-{{ user.id }}"
+              required>
+              <option [value]="user.role" selected>{{ user.role }}</option>
+              <option *ngIf="user.role !== 'ADMIN'" value="ADMIN">ADMIN</option>
+              <option *ngIf="user.role !== 'AGENT'" value="AGENT">AGENT</option>
+            </select>
+          </div>
+
+          <div *ngIf="selectedUserId === user.id" class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form (ngSubmit)="submitPasswordChange()">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Changer le mot de passe</h5>
+                    <button type="button" class="btn-close" (click)="closeModal()"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="newPassword" name="password"
+                      class="form-control" placeholder="Nouveau mot de passe" required />
+                    <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      (click)="togglePasswordVisibility()"
+                      style="position: absolute; top: 50%; right: 20px; transform: translateY(-50%); cursor: pointer;">
+                    </i>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Confirmer</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 px-2 pb-2">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="reloadUsers()">Cancel</button>
+            <button class="btn btn-primary btn-sm" (click)="updateUserFields(user)">Update</button>
+            <button class="btn btn-outline-warning btn-sm" (click)="openPasswordModal(user.id)">Change Password</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

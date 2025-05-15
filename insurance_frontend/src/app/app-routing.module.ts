@@ -12,6 +12,7 @@ import { RisqueListComponent } from './pages/risque-list/risque-list.component';
 import { UpdateContactComponent } from './pages/update-contact/update-contact.component';
 import { ContactDetailsComponent } from './pages/contact-details/contact-details.component';
 import { ContractFormComponent } from './pages/contract-form/contract-form.component';
+import { UserListComponent } from './pages/user-list/user-list.component';
 
 const routes: Routes = [
   {
@@ -20,13 +21,14 @@ const routes: Routes = [
     children: [
       { path: '', component: DashboardComponent, canActivate: [authGuard] },
       { path: 'contracts', component: ContractListComponent, canActivate: [authGuard] },
-      { path: 'contracts/add', component: ContractFormComponent, canActivate: [authGuard] },
+      { path: 'contracts/add/:id', component: ContractFormComponent, canActivate: [authGuard] },
       { path: 'contracts/update-contract/:id', component: UpdateContractComponent, canActivate: [authGuard] },
       { path: 'contacts', component: ContactListComponent, canActivate: [authGuard] },
       { path: 'contacts/add', component: ContactFormComponent, canActivate: [authGuard] },
       { path: 'contacts/update-contact/:id', component: UpdateContactComponent, canActivate: [authGuard] },
       { path: 'contacts/contact-details/:id', component: ContactDetailsComponent, canActivate: [authGuard] },
-      { path: 'risques', component: RisqueListComponent }
+      { path: 'risques', component: RisqueListComponent },
+      { path: 'users', component: UserListComponent }
 
     ]
   },

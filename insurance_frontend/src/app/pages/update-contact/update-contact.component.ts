@@ -24,6 +24,9 @@ export class UpdateContactComponent implements OnInit {
     matriculeFiscale: ''
   };
 
+  toastMessage = '';
+  toastType = 'success';
+
   constructor(
     private route: ActivatedRoute,
     private contactService: ContactService
@@ -60,13 +63,19 @@ export class UpdateContactComponent implements OnInit {
     this.contactService.updateContact(this.contactId, this.contact).subscribe({
       next: (updated) => {
         console.log('Contact updated:', updated);
-        alert('Contact updated successfully!');
+        this.showToast('Contact modifié avec succès.', 'success');
         // Optionally refresh the data or navigate away
       },
       error: (err) => {
         console.error('Error updating contact:', err);
-        alert('Failed to update contact.');
+        this.showToast("Erreur lors de la modification.", 'danger');
       }
     });
+  }
+
+  showToast(message: string, type: 'success' | 'danger') {
+    this.toastMessage = message;
+    this.toastType = type;
+    setTimeout(() => this.toastMessage = '', 5000);
   }
 }

@@ -10,7 +10,9 @@ import { AuthService } from 'src/app/services/authService/auth.service';
 export class LoginComponent {
   loginData = { email: '', password: '' };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
+
+  loginErrorMessage: string = '';
 
   onLogin(): void {
     console.log('Login function triggered');
@@ -19,17 +21,24 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login successful:', response);
 
-        // Save token and role in localStorage
         localStorage.setItem('token', response.token);
         localStorage.setItem('role', response.role);
 
-        // Navigate all users to the same dashboard
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Login failed:', err);
-        alert('Login failed! Please check your credentials.');
+
+        this.loginErrorMessage = 'Adresse e-mail ou mot de passe incorrect';
+        this.loginData.email = '';
+        this.loginData.password = '';
       }
     });
+  }
+
+  showPassword = false;
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

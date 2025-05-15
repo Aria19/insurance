@@ -13,18 +13,28 @@
                                 <i class="fas fa-user"></i>
                             </span>
                             <input type="text" id="email" class="form-control" placeholder="email"
-                                [(ngModel)]="loginData.email" name="email" required>
+                                [(ngModel)]="loginData.email" (input)="loginErrorMessage = ''" name="email" required>
                         </div>
-                    
+
                         <!-- Password Input -->
                         <div class="input-group mb-3">
                             <span class="input-group-text bg-warning text-black border-0 px-3">
                                 <i class="fas fa-key"></i>
                             </span>
-                            <input type="password" id="password" class="form-control" placeholder="Password"
-                                [(ngModel)]="loginData.password" name="password" required>
+
+                            <input [type]="showPassword ? 'text' : 'password'" id="password" class="form-control"
+                                placeholder="Password" [(ngModel)]="loginData.password" (input)="loginErrorMessage = ''" name="password" required />
+
+                            <span class="input-group-text" style="cursor: pointer;"
+                                (click)="togglePasswordVisibility()">
+                                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                            </span>
                         </div>
-                    
+
+                        <div *ngIf="loginErrorMessage" class="text-danger small mb-3">
+                            {{ loginErrorMessage }}
+                        </div>
+
                         <!-- Login Button -->
                         <div class="form-group d-flex justify-content-end">
                             <input type="submit" value="Login" class="btn btn-warning px-4">

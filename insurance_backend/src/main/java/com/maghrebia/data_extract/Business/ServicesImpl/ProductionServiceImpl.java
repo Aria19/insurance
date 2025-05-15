@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.maghrebia.data_extract.Business.Services.ProductionService;
+import com.maghrebia.data_extract.DAO.Entities.Banque;
 import com.maghrebia.data_extract.DAO.Entities.Contacts;
 import com.maghrebia.data_extract.DAO.Entities.Production;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
@@ -32,10 +33,13 @@ import com.maghrebia.data_extract.DAO.Repositories.BanqueRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ContactsRepository;
 import com.maghrebia.data_extract.DAO.Repositories.ProductionRepository;
 import com.maghrebia.data_extract.DAO.Repositories.RisqueRepository;
+import com.maghrebia.data_extract.DTO.CreateBanqueDTO;
+import com.maghrebia.data_extract.DTO.CreateProductionDTO;
 import com.maghrebia.data_extract.DTO.ProductionDTO;
 import com.maghrebia.data_extract.Mapper.CreateBanqueMapper;
 import com.maghrebia.data_extract.Mapper.CreateProductionMapper;
 import com.maghrebia.data_extract.Mapper.ProductionMapper;
+import com.maghrebia.data_extract.Utils.ContractNumberUtil;
 import com.maghrebia.data_extract.Utils.ExcelCellUtil;
 import com.maghrebia.data_extract.Utils.ExcelRowUtil;
 
@@ -366,4 +370,62 @@ public class ProductionServiceImpl implements ProductionService {
                 .toList();
     }
 
+    @Override
+    public void saveContractWithTransaction(Long idContact, CreateProductionDTO contractDto) {
+            Optional<Risque> risqueOpt = risqueServiceImpl.findByidRisque(contractDto.getCodeRisque());
+            Contacts savedContact = contactRepository.findByIdContact(idContact);
+
+            if (risqueOpt.isPresent()) {
+                Risque risque = risqueOpt.get();
+                Production contract = new Production();
+
+                contract.setNumeroContrat(generateUniqueContractNumber());
+                contract.setNature(contractDto.getNature());
+                contract.setRisque(risque);
+                contract.setDateEffet(contractDto.getDateEffet());
+                contract.setDateEcheance(contractDto.getDateEcheance());
+                contract.setMois(contractDto.getMois());
+                contract.setDureeContrat(contractDto.getDureeContrat());
+                contract.setModePayement(contractDto.getModePayement());
+                contract.setNombreCheque(contractDto.getNombreCheque());
+                contract.setNumeroCheque(contractDto.getNumeroCheque());
+                contract.setDateDuCheque(contractDto.getDateDuCheque());
+                contract.setPrimeNette(contractDto.getPrimeNette());
+                contract.setPrime(contractDto.getPrime());
+                contract.setCommission(contractDto.getCommission());
+                contract.setRemarques(contractDto.getRemarques());
+                contract.setContact(savedContact);
+
+                Production savedContract = productionRepository.save(contract);
+
+                if (contractDto.getTransactions() != null) {
+                    for (CreateBanqueDTO banqueDto : contractDto.getTransactions()) {
+                        Banque banque = new Banque();
+                        banque.setDate(banqueDto.getDate());
+                        banque.setMontant(banqueDto.getMontant());
+                        banque.setTerme(banqueDto.getTerme());
+                        banque.setModePayement(banqueDto.getModePayement());
+                        banque.setNt(banqueDto.getNt());
+                        banque.setBvBanque(banqueDto.getBvBanque());
+                        banque.setBvPortail(banqueDto.getBvPortail());
+                        banque.setRemarque(banqueDto.getRemarque());
+                        banque.setContact(savedContact);
+                        banque.setContract(savedContract);
+
+                        banqueRepository.save(banque);
+                    }
+                }
+            } else {
+                throw new RuntimeException("Risque not found for code: " + contractDto.getCodeRisque());
+            }
+    }
+
+    public String generateUniqueContractNumber() {
+        String contractNumber;
+        do {
+            contractNumber = ContractNumberUtil.generateContractNumber(); // Generates contract number
+        } while (productionRepository.existsByNumeroContrat(contractNumber)); // Ensures uniqueness
+        return contractNumber;
+    }
+    
 }

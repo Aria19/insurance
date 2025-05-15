@@ -13,4 +13,7 @@ public interface RisqueService {
     public void importRisques(Sheet sheet);
     public Optional<Risque> findBycodeRisque(Integer codeRisque);
     public List<RisqueDTO> getAllRisques();
+    public void addRisque(RisqueDTO risqueDTO);
+    public RisqueDTO getRisqueByID(Long risqueId);
+    public void deleteRisk(Long risqueID);
 }

@@ -4,21 +4,29 @@
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
             <tr>
-                <th>ID</th>
                 <th>Code Risque</th>
                 <th>Nom du Risque</th>
                 <th>Commission</th>
+                <th *ngIf="isAdmin()">Action</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let risque of risques">
-                <td>{{ risque.idRisque }}</td>
                 <td>{{ risque.codeRisque }}</td>
                 <td>{{ risque.risqueName }}</td>
                 <td>{{ risque.commission }}%</td>
+                <td *ngIf="isAdmin()">
+                    <i class="bi bi-pencil-fill text-success" style="cursor: pointer;"></i>
+                    <i class="bi bi-trash-fill text-danger mx-2" style="cursor: pointer;"
+                        (click)="openDeleteModal(risque.idRisque)"></i>
+                </td>
             </tr>
         </tbody>
     </table>
+
+    <app-modal [title]="'Êtes-vous sûr ?'"
+        [message]="'Cette action supprimera définitivement le risque et ses données du serveur.'"
+        (confirm)="deleteUser()"></app-modal>
 
     <div *ngIf="risques.length === 0" class="alert alert-info">
         Aucun risque disponible.

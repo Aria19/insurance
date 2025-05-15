@@ -14,14 +14,13 @@ public class RisqueDTO {
     private Long idRisque;
     private Integer codeRisque;
     private String risqueName;
+    private Float commission;
 
     public RisqueDTO(Integer codeRisque, String risqueName, Float commission) {
         this.codeRisque = codeRisque;
         this.risqueName = risqueName;
         this.commission = commission;
     }
-
-    private Float commission;
 
     public RisqueDTO(Risque risque) {
         this.idRisque = risque.getIdRisque();

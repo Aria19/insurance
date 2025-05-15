@@ -17,6 +17,7 @@ import com.maghrebia.data_extract.DTO.ProductionDTO;
 
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/productions")
@@ -59,12 +60,12 @@ public class ProductionController {
     }
 
     @DeleteMapping("/delete/{idProduction}")
-    public ResponseEntity<String> deleteProduction(@PathVariable Long idProduction) {
+    public ResponseEntity<Void> deleteProduction(@PathVariable Long idProduction) {
         try {
             productionService.deleteProduction(idProduction);
-            return ResponseEntity.ok("Production with Id " + idProduction + "has been deleted");
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -83,4 +84,9 @@ public class ProductionController {
         return ResponseEntity.ok(productions);
     }
 
+    @PostMapping("/add/{idContact}")
+    public void saveContractWithTransaction(@PathVariable Long idContact,
+            @RequestBody CreateProductionDTO contractDto) {
+        productionService.saveContractWithTransaction(idContact, contractDto);
+    }
 }

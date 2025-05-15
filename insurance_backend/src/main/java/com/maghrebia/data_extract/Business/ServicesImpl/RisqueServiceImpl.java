@@ -72,4 +72,22 @@ public class RisqueServiceImpl implements RisqueService {
                 .toList();
     }
 
+    public void addRisque(RisqueDTO risqueDTO) {
+        Risque risque = new Risque();
+        risque.setCodeRisque(risqueDTO.getCodeRisque());
+        risque.setRisqueName(risqueDTO.getRisqueName());
+        risque.setCommission(risqueDTO.getCommission());
+
+        risqueRepository.save(risque);
+    }
+
+    public RisqueDTO getRisqueByID(Long risqueId) {
+        Risque risque = risqueRepository.findById(risqueId).orElseThrow(() -> new RuntimeException("Risk not found"));
+        return new RisqueDTO(risque);
+    }
+
+    public void deleteRisk(Long risqueID) {
+        Risque risque = risqueRepository.findById(risqueID).orElseThrow(() -> new RuntimeException("Risk not found"));
+        risqueRepository.delete(risque);
+    }
 }

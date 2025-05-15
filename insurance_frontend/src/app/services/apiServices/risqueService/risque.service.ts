@@ -1,25 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { catchError, EMPTY, Observable } from 'rxjs';
-import { BaseService } from '../../baseService/base.service';
 import { Risque } from 'src/app/models/Risque';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RisqueService extends BaseService {
+export class RisqueService {
   constructor(private http: HttpClient) {
-    super();
   }
 
   getAllRisques(): Observable<any[]> {
-    const headers = this.getAuthHeaders();
 
-    return this.http.get<any[]>(`${this.baseApiUrl}/risques/view`, { headers }).pipe(
+    return this.http.get<any[]>(`${environment.apiUrl}/risques/view`).pipe(
       catchError(err => {
         console.error("Error fetching risques", err);
         return EMPTY;
       })      
     )
+  }
+
+  
+
+  deleteRisque(risqueId: number): Observable<void> {
+
+    return this.http.delete<void>(`${environment.apiUrl}/risques/${risqueId}`);
   }
 }

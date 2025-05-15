@@ -1,29 +1,36 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.css']
+  templateUrl: './modal.component.html'
 })
 export class ModalComponent {
-  isVisible = false;
-  @Output() confirmAction = new EventEmitter<boolean>();
+  @Input() title: string = '';
+  @Input() message: string = '';
+  @Output() confirm = new EventEmitter<void>();
 
-  open() {
-    this.isVisible = true;
+  @ViewChild('modalElement') modalElement!: ElementRef;
+  private modalInstance: any;
+
+  // Show the modal programmatically
+  open(): void {
+    if (!this.modalInstance) {
+      this.modalInstance = new bootstrap.Modal(this.modalElement.nativeElement);
+    }
+    this.modalInstance.show();
   }
 
-  close() {
-    this.isVisible = false;
+  // Hide the modal programmatically
+  close(): void {
+    if (this.modalInstance) {
+      this.modalInstance.hide();
+    }
   }
 
-  confirm() {
-    this.confirmAction.emit(true);
-    this.close();
-  }
-
-  cancel() {
-    this.confirmAction.emit(false);
-    this.close();
+  onConfirm(): void {
+    this.confirm.emit();
+    this.close(); // auto-close on confirm
   }
 }

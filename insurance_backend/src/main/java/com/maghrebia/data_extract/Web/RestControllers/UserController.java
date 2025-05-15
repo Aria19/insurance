@@ -1,7 +1,9 @@
 package com.maghrebia.data_extract.Web.RestControllers;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,11 +15,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.maghrebia.data_extract.Business.Services.UserService;
-import com.maghrebia.data_extract.DTO.UserDTORequest;
+import com.maghrebia.data_extract.DTO.PasswordUpdateDTO;
+import com.maghrebia.data_extract.DTO.UserCreateDTO;
 import com.maghrebia.data_extract.DTO.UserDTOResponse;
+import com.maghrebia.data_extract.DTO.UserUpdateDTO;
 
 import jakarta.validation.Valid;
 
@@ -49,7 +55,7 @@ public class UserController {
     // Only Admins can create a user
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody @Valid UserDTORequest userDTO) {
+    public ResponseEntity<String> createUser(@RequestBody @Valid UserCreateDTO userDTO) {
         userService.createUser(userDTO);
         return ResponseEntity.ok("User created successfully");
     }
@@ -57,16 +63,30 @@ public class UserController {
     // Only Admins can update a user
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody @Valid UserDTORequest userDTO) {
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody @Valid UserUpdateDTO userDTO) {
         userService.updateUser(userId, userDTO);
         return ResponseEntity.ok("User updated successfully");
+    }
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<String> updatePassword(@PathVariable Long userId, @RequestBody @Valid PasswordUpdateDTO dto) {
+        userService.updatePassword(userId, dto.getPassword());
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
+    @PutMapping(value = "/{userId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateUserImage(
+            @PathVariable Long userId,
+            @RequestParam("image") MultipartFile file) throws IOException {
+        userService.updateUserImage(userId, file);
+        return ResponseEntity.ok("Image updated successfully");
     }
 
     // Only Admins can delete a user
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok("User updated successfully");
+        return ResponseEntity.ok().build();
     }
 }

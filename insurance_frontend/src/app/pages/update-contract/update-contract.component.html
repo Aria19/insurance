@@ -1,15 +1,15 @@
 <form (ngSubmit)="updateContract()">
-  <h2 class="text-center mb-4">Update Contract</h2>
+  <h2 class="text-center mb-4">Modifier Contrat</h2>
   <!-- First Row -->
   <div class="row">
     <div class="col-md-4 mb-3">
-      <label for="numeroContrat" class="form-label">Contract Number:</label>
+      <label for="numeroContrat" class="form-label">Numéro de contrat:</label>
       <input id="numeroContrat" class="form-control" [(ngModel)]="contract.numeroContrat" name="numeroContrat"
         required />
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="contactName" class="form-label">Contact Name:</label>
+      <label for="contactName" class="form-label">Nom du contact:</label>
       <input id="contactName" class="form-control" [(ngModel)]="contract.contactName" name="contactName" required />
     </div>
 
@@ -22,12 +22,12 @@
   <!-- Second Row -->
   <div class="row">
     <div class="col-md-4 mb-3">
-      <label for="risqueName" class="form-label">Risk Name:</label>
+      <label for="risqueName" class="form-label">Nom du risque:</label>
       <input id="risqueName" class="form-control" [(ngModel)]="contract.risqueName" name="risqueName" required />
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="codeRisque" class="form-label">Risk Code:</label>
+      <label for="codeRisque" class="form-label">Code du risque:</label>
       <input id="codeRisque" class="form-control" type="number" [(ngModel)]="contract.codeRisque" name="codeRisque"
         required />
     </div>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="modePayement" class="form-label">Payment Mode:</label>
+      <label for="modePayement" class="form-label">Mode de paiement:</label>
       <select id="modePayement" class="form-select" [(ngModel)]="contract.modePayement" name="modePayement" required>
         <option value="Cheque">Cheque</option>
         <option value="Virement">Virement</option>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="nombreCheque" class="form-label">Number of Cheques:</label>
+      <label for="nombreCheque" class="form-label">Nombre de chèques:</label>
       <input id="nombreCheque" class="form-control" type="number" [(ngModel)]="contract.nombreCheque"
         name="nombreCheque" />
     </div>
@@ -66,12 +66,12 @@
   <!-- Fourth Row -->
   <div class="row">
     <div class="col-md-4 mb-3">
-      <label for="numeroCheque" class="form-label">Cheque Number:</label>
+      <label for="numeroCheque" class="form-label">Numéro de chèque:</label>
       <input id="numeroCheque" class="form-control" [(ngModel)]="contract.numeroCheque" name="numeroCheque" />
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="dateDuCheque" class="form-label">Cheque Date:</label>
+      <label for="dateDuCheque" class="form-label">Date du chèque:</label>
       <input id="dateDuCheque" class="form-control" type="date" [(ngModel)]="contract.dateDuCheque"
         name="dateDuCheque" />
     </div>
@@ -98,14 +98,14 @@
     </div>
 
     <div class="col-md-4 mb-3">
-      <label for="remarques" class="form-label">Remarks:</label>
+      <label for="remarques" class="form-label">Remarques:</label>
       <textarea id="remarques" class="form-control" [(ngModel)]="contract.remarques" name="remarques"></textarea>
     </div>
   </div>
 
   <!-- Buttons -->
   <div class="d-flex justify-content-between">
-    <button type="submit" class="btn btn-success">Update</button>
-    <button type="button" class="btn btn-secondary" routerLink="/dashboard/contracts">Cancel</button>
+    <button type="button" class="btn btn-secondary" routerLink="/dashboard/contracts">Annuler</button>
+    <button type="submit" class="btn btn-success">Enregistrer</button>
   </div>
 </form>

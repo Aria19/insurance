@@ -21,12 +21,15 @@ public class UserDTOResponse {
 
     private String role;
 
+    private String image;
+
     public UserDTOResponse toDTO(User user) {
         return new UserDTOResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getImage()
         );
     }
 
