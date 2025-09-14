@@ -12,9 +12,7 @@ public interface ContactsMapper {
 
     ContactsMapper INSTANCE = Mappers.getMapper(ContactsMapper.class);
 
-    @Mapping(target = "idContact", ignore = true)
-    @Mapping(target = "transactions", ignore = true)
-    @Mapping(target = "contracts", ignore =  true)
+   
     Contacts toEntity(ContactsDTO dto); 
 
     ContactsDTO toDTO(Contacts contact);

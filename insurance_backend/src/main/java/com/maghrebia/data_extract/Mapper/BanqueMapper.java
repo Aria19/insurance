@@ -12,13 +12,7 @@ public interface BanqueMapper {
 
     BanqueMapper INSTANCE = Mappers.getMapper(BanqueMapper.class);
 
-    @Mapping(target = "idTransaction", ignore = true)
-    @Mapping(target = "contact", ignore = true)
-    @Mapping(target = "contract", ignore = true)
     Banque toEntity(BanqueDTO dto);
 
-    @Mapping(target = "contactName", ignore = true)
-    @Mapping(target = "numeroContrat", ignore = true)
-    @Mapping(target = "codeRisque", ignore = true)
     BanqueDTO toDto(Banque banque);
 }

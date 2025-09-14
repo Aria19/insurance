@@ -12,13 +12,8 @@ public interface CreateBanqueMapper {
 
     CreateBanqueMapper INSTANCE = Mappers.getMapper(CreateBanqueMapper.class);
 
-    @Mapping(target = "idTransaction", ignore = true)
-    @Mapping(target = "contact", ignore = true)
-    @Mapping(target = "contract", ignore = true)
-    @Mapping(target = "numeroFeuilleDeCaisse", ignore = true)
     Banque toEntity(CreateBanqueDTO dto);
 
-    @Mapping(target = "contactName", ignore = true)
     CreateBanqueDTO toDto(Banque banque);
 
 }

@@ -12,7 +12,6 @@ public interface RisqueMapper {
 
     RisqueMapper INSTANCE = Mappers.getMapper(RisqueMapper.class);
 
-    @Mapping(target = "contracts", ignore =true)
     Risque toEntity(RisqueDTO risqueDTO);
 
     RisqueDTO toDTO(Risque risque);
