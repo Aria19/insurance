@@ -3,12 +3,14 @@ package com.maghrebia.data_extract.DTO;
 import com.maghrebia.data_extract.DAO.Entities.Risque;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class RisqueDTO {
 
     private Long idRisque;
