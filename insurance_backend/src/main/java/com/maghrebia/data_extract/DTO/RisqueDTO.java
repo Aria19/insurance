@@ -16,16 +16,16 @@ public class RisqueDTO {
     private String risqueName;
     private Float commission;
 
-    public RisqueDTO(Integer codeRisque, String risqueName, Float commission) {
-        this.codeRisque = codeRisque;
-        this.risqueName = risqueName;
-        this.commission = commission;
-    }
-
     public RisqueDTO(Risque risque) {
         this.idRisque = risque.getIdRisque();
         this.codeRisque = risque.getCodeRisque();
         this.risqueName = risque.getRisqueName();
         this.commission = risque.getCommission();
+    }
+
+    public RisqueDTO(Integer codeRisque, String risqueName, Float commission) {
+        this.codeRisque = codeRisque;
+        this.risqueName = risqueName;
+        this.commission = commission;
     }
 }

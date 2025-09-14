@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/models/User';
 import { UserService } from 'src/app/services/apiServices/userService/user.service';
-import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ModalComponent } from 'src/app/shared/delete-modal/modal.component';
 
 @Component({
   selector: 'app-user-list',

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.maghrebia.data_extract.Business.Services.RisqueService;
 import com.maghrebia.data_extract.Business.ServicesImpl.RisqueServiceImpl;
-import com.maghrebia.data_extract.DAO.Entities.Risque;
 import com.maghrebia.data_extract.DTO.RisqueDTO;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
@@ -68,9 +67,15 @@ public class RisqueController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addRisque(@RequestBody @Valid RisqueDTO risqueDTO) {
+    public ResponseEntity<Void> addRisque(@RequestBody @Valid RisqueDTO risqueDTO) {
         risqueService.addRisque(risqueDTO);
-        return ResponseEntity.ok("Risque added successfully");
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update/{risqueId}")
+    public ResponseEntity<Void> updateRisque(@PathVariable Long risqueId, @RequestBody @Valid RisqueDTO risqueDTO) {
+        risqueService.upddateRisque(risqueId, risqueDTO);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/view/{risqueId}")

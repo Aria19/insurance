@@ -1,5 +1,24 @@
 <div class="container mt-4">
+    <div *ngIf="toastMessage" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055">
+        <div class="toast align-items-center text-white bg-{{ toastType }} border-0 show">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ toastMessage }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    (click)="toastMessage = ''"></button>
+            </div>
+        </div>
+    </div>
+
     <h2>Liste des Risques</h2>
+    
+    <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-primary" (click)="openAddModal()" *ngIf="isAdmin()">
+            <i class="bi bi-plus-circle me-1"></i> Ajouter un Risque
+        </button>
+    </div>
+
 
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
@@ -16,7 +35,8 @@
                 <td>{{ risque.risqueName }}</td>
                 <td>{{ risque.commission }}%</td>
                 <td *ngIf="isAdmin()">
-                    <i class="bi bi-pencil-fill text-success" style="cursor: pointer;"></i>
+                    <i class="bi bi-pencil-fill text-success" style="cursor: pointer;"
+                        (click)="openEditModal(risque)"></i>
                     <i class="bi bi-trash-fill text-danger mx-2" style="cursor: pointer;"
                         (click)="openDeleteModal(risque.idRisque)"></i>
                 </td>
@@ -27,6 +47,10 @@
     <app-modal [title]="'Êtes-vous sûr ?'"
         [message]="'Cette action supprimera définitivement le risque et ses données du serveur.'"
         (confirm)="deleteUser()"></app-modal>
+
+    <app-risque-form-modal [formData]="formData" [isEditing]="isEditing" (submit)="handleFormSubmit($event)"
+        (cancel)="closeModal()">
+    </app-risque-form-modal>
 
     <div *ngIf="risques.length === 0" class="alert alert-info">
         Aucun risque disponible.

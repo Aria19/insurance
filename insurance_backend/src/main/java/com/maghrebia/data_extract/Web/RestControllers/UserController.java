@@ -44,8 +44,6 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    // Both Admins and Agents can view a user (only the admin can see all users,
-    // agents can only view their own)
     @PreAuthorize("hasAnyAuthority('ADMIN', 'AGENT')")
     @GetMapping("/{userId}")
     public UserDTOResponse getUserById(@PathVariable Long userId, @AuthenticationPrincipal UserDetails userDetails) {

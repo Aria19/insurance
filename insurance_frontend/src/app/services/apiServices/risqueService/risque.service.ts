@@ -12,7 +12,6 @@ export class RisqueService {
   }
 
   getAllRisques(): Observable<any[]> {
-
     return this.http.get<any[]>(`${environment.apiUrl}/risques/view`).pipe(
       catchError(err => {
         console.error("Error fetching risques", err);
@@ -21,10 +20,15 @@ export class RisqueService {
     )
   }
 
-  
+  addRisque(riskData: any): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/risques/add`, riskData)
+  }
+
+  updateRisque(risqueId: number, riskData: any): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/risques/update/${risqueId}`, riskData)
+  }
 
   deleteRisque(risqueId: number): Observable<void> {
-
     return this.http.delete<void>(`${environment.apiUrl}/risques/${risqueId}`);
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ContractService } from 'src/app/services/apiServices/contractService/contract.service';
-import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ModalComponent } from 'src/app/shared/delete-modal/modal.component';
 //import { ModalComponent } from 'src/app/shared/modal/modal.component';
 
 declare var bootstrap: any;

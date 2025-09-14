@@ -1,0 +1,30 @@
+<div class="modal fade" id="risqueFormModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form #risqueForm="ngForm" (ngSubmit)="onSubmit(risqueForm)">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ isEditing ? 'Modifier Risque' : 'Ajouter Risque' }}</h5>
+          <button type="button" class="btn-close" (click)="onCancel()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Code Risque</label>
+            <input [(ngModel)]="formData.codeRisque" name="codeRisque" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label>Nom du Risque</label>
+            <input [(ngModel)]="formData.risqueName" name="risqueName" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label>Commission</label>
+            <input [(ngModel)]="formData.commission" name="commission" class="form-control" required type="number" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" type="submit">{{ isEditing ? 'Mettre à jour' : 'Ajouter' }}</button>
+          <button class="btn btn-secondary" type="button" (click)="onCancel()">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

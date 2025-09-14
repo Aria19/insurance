@@ -14,6 +14,7 @@ public interface RisqueService {
     public Optional<Risque> findBycodeRisque(Integer codeRisque);
     public List<RisqueDTO> getAllRisques();
     public void addRisque(RisqueDTO risqueDTO);
+    public void upddateRisque(Long risqueID, RisqueDTO risqueDTO);
     public RisqueDTO getRisqueByID(Long risqueId);
     public void deleteRisk(Long risqueID);
 }

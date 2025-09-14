@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ContractListComponent } from './pages/contract-list/contract-list.component';
 import { DashboardLayoutComponent } from './layout/dashboard-layout/dashboard-layout.component';
-import { ModalComponent } from './shared/modal/modal.component';
+import { ModalComponent } from './shared/delete-modal/modal.component';
 import { UpdateContractComponent } from './pages/update-contract/update-contract.component';
 import { ContactListComponent } from './pages/contact-list/contact-list.component';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -20,6 +20,8 @@ import { ContactDetailsComponent } from './pages/contact-details/contact-details
 import { ContractFormComponent } from './pages/contract-form/contract-form.component';
 import { UserListComponent } from './pages/user-list/user-list.component';
 import { AuthInterceptorService } from './interceptors/auth-interceptor.service';
+import { RisqueFormModalComponent } from './shared/risque-form-modal/risque-form-modal.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { AuthInterceptorService } from './interceptors/auth-interceptor.service'
     UpdateContactComponent,
     ContactDetailsComponent,
     ContractFormComponent,
-    UserListComponent
+    UserListComponent,
+    RisqueFormModalComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

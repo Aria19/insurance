@@ -20,11 +20,12 @@ public class JwtServiceImpl implements JwtService {
     private static final String SECRET_KEY = "YOURSECRETMYKEYLOVEBASE643FORYOUENCOISENDLESSDEDHERE";
 
     // 🔹 Generate a JWT token (Updated version)
-    public String generateToken(String email, String role, String username) {
+    public String generateToken(String email, String role, String username, Long id) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)  // Adding the role as a custom claim
                 .claim("username", username)
+                .claim("userId", id)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Token expiration time
                 .signWith(getSigningKey())
@@ -35,6 +36,12 @@ public class JwtServiceImpl implements JwtService {
     // 🔹 Extract username from JWT
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    @Override
+    public Long extractId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Long.class);
     }
 
     // 🔹 Extract claims
@@ -73,5 +80,6 @@ public class JwtServiceImpl implements JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    
 }
 

@@ -55,10 +55,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (userOptional.isPresent() && passwordEncoder.matches(password, userOptional.get().getPassword())) {
             User user = userOptional.get();
-            String token = jwtService.generateToken(email, user.getRole(), user.getUsername()); // Generate token with
-                                                                                                // role
+            String token = jwtService.generateToken(email, user.getRole(), user.getUsername(), user.getId()); // Generate
+                                                                                                              // token
+                                                                                                              // with
+            // role
 
-            return new LoginResponse(token, user.getRole(), user.getUsername()); // Return token & role
+            return new LoginResponse(token, user.getRole(), user.getUsername(), user.getId()); // Return token & role
         } else {
             throw new RuntimeException("Invalid credentials");
         }
@@ -104,24 +106,47 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Delete old file if it exists (and is not the default image)
+        if (user.getImage() != null && !user.getImage().isBlank() && !user.getImage().endsWith("default.png")) {
+            Path oldPath = Paths.get(System.getProperty("user.dir") + user.getImage());
+            Files.deleteIfExists(oldPath);
+        }
+
+        // Save new file
         String fileName = saveFile(file);
         user.setImage(fileName);
 
         userRepository.save(user);
     }
 
+    /**
+     * Save file with only the new file
+     */
     public String saveFile(MultipartFile file) throws IOException {
+        return saveFile(file, null); // Delegate to the overloaded method
+    }
+
+    /**
+     * Save file, with an option to delete an old file
+     */
+    public String saveFile(MultipartFile file, String oldFilePath) throws IOException {
         String uploadDir = System.getProperty("user.dir") + "/uploads";
         File dir = new File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
+        // Delete old file if path is provided and not default
+        if (oldFilePath != null && !oldFilePath.isBlank() && !oldFilePath.endsWith("default.png")) {
+            Path oldPath = Paths.get(System.getProperty("user.dir") + oldFilePath);
+            Files.deleteIfExists(oldPath);
+        }
+
+        // Generate unique name and save new file
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Path filePath = Paths.get(uploadDir, fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // Return the relative path (you can also store full if needed)
         return "/uploads/" + fileName;
     }
 
@@ -137,17 +162,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userMapper.toDTOList(users);
     }
 
-    // 🔹 Get user by ID (accessible by both admins and agents, but agents can only
-    // view their own profile)
     public UserDTOResponse getUserById(Long userId, String loggedInUsername) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (loggedInUsername.equals("ADMIN") || loggedInUsername.equals(user.getUsername())) {
-            return userMapper.toDTO(user); // Convert User entity to DTO before returning
-        } else {
-            throw new RuntimeException("Permission denied");
-        }
+        // if (loggedInUsername.equals("ADMIN") ||
+        // loggedInUsername.equals(user.getUsername())) {
+
+        return userMapper.toDTO(user); // Convert User entity to DTO before returning
     }
 
 }

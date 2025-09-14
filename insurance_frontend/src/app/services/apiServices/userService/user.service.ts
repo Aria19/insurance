@@ -14,7 +14,7 @@ export class UserService {
 
   getUserById(id: number): Observable<any> {
 
-    return this.http.get<any>(`${environment.apiUrl}/${id}`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/users/${id}`).pipe(
       catchError(error => {
         console.error('Error fetching user:', error);
         return throwError(() => new Error('Failed to fetch user data'));

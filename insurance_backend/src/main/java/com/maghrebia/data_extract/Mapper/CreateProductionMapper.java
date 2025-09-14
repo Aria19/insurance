@@ -16,9 +16,12 @@ public interface CreateProductionMapper {
     @Mapping(target = "contact", ignore = true)
     @Mapping(target = "risque", ignore = true)
     @Mapping(target = "idProduction", ignore = true)
+    @Mapping(target = "numeroContrat", ignore = true)
     Production toEntity(CreateProductionDTO createProductionDTO);
 
     @Mapping(target = "codeRisque", ignore = true)
+    @Mapping(target = "nature", ignore = true)
+    @Mapping(target = "transactions", ignore = true)
     CreateProductionDTO toDto(Production production);
 
 }

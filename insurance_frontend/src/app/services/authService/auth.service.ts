@@ -3,24 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 interface LoginResponse {
   token: string;
   role: string;
   username: string;
+  id: number;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 
   /** LOGIN FUNCTION */
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, credentials).pipe(
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap((response: LoginResponse) => {
         console.log('Login Response:', response); // Debugging output
 
@@ -33,6 +34,8 @@ export class AuthService {
         } else {
           console.warn('No name found in login response');
         }
+
+        localStorage.setItem('userId', response.id.toString());
       })
     );
   }

@@ -13,6 +13,7 @@ import { UpdateContactComponent } from './pages/update-contact/update-contact.co
 import { ContactDetailsComponent } from './pages/contact-details/contact-details.component';
 import { ContractFormComponent } from './pages/contract-form/contract-form.component';
 import { UserListComponent } from './pages/user-list/user-list.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 const routes: Routes = [
   {
@@ -28,7 +29,8 @@ const routes: Routes = [
       { path: 'contacts/update-contact/:id', component: UpdateContactComponent, canActivate: [authGuard] },
       { path: 'contacts/contact-details/:id', component: ContactDetailsComponent, canActivate: [authGuard] },
       { path: 'risques', component: RisqueListComponent },
-      { path: 'users', component: UserListComponent }
+      { path: 'users', component: UserListComponent },
+      { path: 'profile', component: ProfileComponent}
 
     ]
   },

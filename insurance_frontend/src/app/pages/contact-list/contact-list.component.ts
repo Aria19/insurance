@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContactService } from 'src/app/services/apiServices/contactService/contact.service';
-import { ModalComponent } from 'src/app/shared/modal/modal.component';
+import { ModalComponent } from 'src/app/shared/delete-modal/modal.component';
 
 @Component({
   selector: 'app-contact-list',

@@ -19,5 +19,6 @@ public interface BanqueMapper {
 
     @Mapping(target = "contactName", ignore = true)
     @Mapping(target = "numeroContrat", ignore = true)
+    @Mapping(target = "codeRisque", ignore = true)
     BanqueDTO toDto(Banque banque);
 }
