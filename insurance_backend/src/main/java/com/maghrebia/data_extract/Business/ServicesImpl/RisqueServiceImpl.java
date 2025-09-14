@@ -28,7 +28,7 @@ public class RisqueServiceImpl implements RisqueService {
         this.risqueMapper = risqueMapper;
     }
 
-    @Override
+    /* @Override
     public void importRisques(Sheet sheet) {
         Iterator<Row> rowIterator = sheet.iterator();
         if (rowIterator.hasNext()) {
@@ -55,7 +55,7 @@ public class RisqueServiceImpl implements RisqueService {
                 risqueRepository.save(risque);
             }
         }
-    }
+    } */
 
     public Optional<Risque> findBycodeRisque(Integer codeRisque) {
         return risqueRepository.findBycodeRisque(codeRisque);

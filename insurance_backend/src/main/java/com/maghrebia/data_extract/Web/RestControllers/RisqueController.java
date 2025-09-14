@@ -33,7 +33,7 @@ public class RisqueController {
         this.risqueService = risqueService;
     }
 
-    @PostMapping(value = "/import", consumes = "multipart/form-data")
+    /* @PostMapping(value = "/import", consumes = "multipart/form-data")
     public ResponseEntity<String> importDataFromExcel(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
@@ -59,7 +59,7 @@ public class RisqueController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to import data. Make sure the Excel file is not corrupted.");
         }
-    }
+    } */
 
     @GetMapping("/view")
     public List<RisqueDTO> getAllRisques() {

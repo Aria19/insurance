@@ -1,7 +1,6 @@
 package com.maghrebia.data_extract.DTO;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

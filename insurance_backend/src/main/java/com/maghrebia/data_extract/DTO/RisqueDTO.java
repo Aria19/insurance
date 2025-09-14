@@ -23,9 +23,9 @@ public class RisqueDTO {
         this.commission = risque.getCommission();
     }
 
-    public RisqueDTO(Integer codeRisque, String risqueName, Float commission) {
+    /* public RisqueDTO(Integer codeRisque, String risqueName, Float commission) {
         this.codeRisque = codeRisque;
         this.risqueName = risqueName;
         this.commission = commission;
-    }
+    } */
 }

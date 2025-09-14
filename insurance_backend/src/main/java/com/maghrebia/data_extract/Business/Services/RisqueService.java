@@ -10,7 +10,7 @@ import com.maghrebia.data_extract.DTO.RisqueDTO;
 
 public interface RisqueService {
     
-    public void importRisques(Sheet sheet);
+    //public void importRisques(Sheet sheet);
     public Optional<Risque> findBycodeRisque(Integer codeRisque);
     public List<RisqueDTO> getAllRisques();
     public void addRisque(RisqueDTO risqueDTO);

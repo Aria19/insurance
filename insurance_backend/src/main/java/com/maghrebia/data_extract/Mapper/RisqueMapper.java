@@ -11,20 +11,7 @@ public interface RisqueMapper {
 
     RisqueMapper INSTANCE = Mappers.getMapper(RisqueMapper.class);
 
-    // Map DTO to Entity
-    default Risque toEntity(RisqueDTO dto) {
-        if (dto == null) return null;
-        Risque r = new Risque(); // use no-args constructor
-        r.setIdRisque(dto.getIdRisque());
-        r.setCodeRisque(dto.getCodeRisque());
-        r.setRisqueName(dto.getRisqueName());
-        r.setCommission(dto.getCommission());
-        return r;
-    }
+    Risque toEntity(RisqueDTO dto);
 
-    // Map Entity to DTO
-    default RisqueDTO toDTO(Risque entity) {
-        if (entity == null) return null;
-        return new RisqueDTO(entity); // use your existing constructor
-    }
+    RisqueDTO toDTO(Risque entity);
 }
